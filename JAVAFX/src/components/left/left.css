@@ -1,0 +1,5 @@
+#left{
+-fx-border-style:solid  solid none none;
+    -fx-border-color: darkGray;
+-fx-border-width: 5px;
+}
