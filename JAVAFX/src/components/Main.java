@@ -1,5 +1,6 @@
 package components;
 
+import components.app.AppController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -27,6 +28,8 @@ public class Main extends Application {
         URL url = getClass().getResource(APP_FXML_INCLUDE_RESOURCE);
         fxmlLoader.setLocation(url);
         Parent root = fxmlLoader.load(url.openStream());
+        AppController controller = (AppController) fxmlLoader.getController();
+        controller.setPrimaryStage(primaryStage);
         Scene scene = new Scene(root, 600, 550);
         primaryStage.setScene(scene);
         primaryStage.show();

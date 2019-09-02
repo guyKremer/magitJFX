@@ -4,15 +4,15 @@
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.app.AppController">
     <top>
-        <fx:include fx:id="header" source="../header/header.fxml" />
+        <fx:include fx:id="headerComponent" source="../header/header.fxml" />
     </top>
 
     <center>
-        <fx:include fx:id="center" source="../center/center.fxml" />
+        <fx:include fx:id="centerComponent" source="../center/center.fxml" />
     </center>
 
     <left>
-        <fx:include fx:id="left" source="../left/left.fxml" />
+        <fx:include fx:id="leftComponent" source="../left/left.fxml" />
     </left>
 
 </BorderPane>
