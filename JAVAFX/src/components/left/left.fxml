@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-<VBox id="left" fx:id="left" minHeight="-Infinity" minWidth="-Infinity" prefHeight="345.0" prefWidth="114.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox id="left" fx:id="left" minHeight="-Infinity" minWidth="-Infinity" prefHeight="345.0" prefWidth="114.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.left.leftController">
     <children>
         <Label text="Changed Files" VBox.vgrow="ALWAYS" />
         <TextFlow prefHeight="107.0" prefWidth="202.0" VBox.vgrow="ALWAYS" />
