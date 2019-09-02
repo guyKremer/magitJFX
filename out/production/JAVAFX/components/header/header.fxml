@@ -5,10 +5,9 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="576.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <MenuBar>
+        <MenuBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="608.0" VBox.vgrow="ALWAYS">
             <menus>
                 <Menu mnemonicParsing="false" text="Repository">
                     <items>
@@ -30,7 +29,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <MenuBar cache="true">
+        <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="608.0" VBox.vgrow="ALWAYS">
             <menus>
                 <Menu mnemonicParsing="false" text="Show Status" />
                 <Menu mnemonicParsing="false" text="Commit" />
@@ -41,4 +40,3 @@
         </MenuBar>
     </children>
 </VBox>
-
