@@ -105,7 +105,7 @@
       <HBox prefHeight="43.0" prefWidth="602.0" BorderPane.alignment="CENTER">
          <children>
             <Label prefHeight="17.0" prefWidth="30.0" text="User:" />
-            <Text disable="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Administrator" />
+            <Text fx:id="userName" disable="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Administrator" />
          </children>
       </HBox>
    </top>

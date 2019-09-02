@@ -8,6 +8,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import logic.EngineAdapter;
+
+import java.util.function.Consumer;
 
 public class AppController {
 
@@ -19,6 +22,7 @@ public class AppController {
     @FXML private leftController leftComponentController;
 
     private Stage primaryStage;
+    private EngineAdapter engineAdapter;
 
 
     @FXML
@@ -28,6 +32,11 @@ public class AppController {
             centerComponentController.setMainController(this);
             leftComponentController.setMainController(this);
         }
+        engineAdapter = new EngineAdapter();
+    }
+
+    public EngineAdapter getEngineAdapter() {
+        return engineAdapter;
     }
 
     public void setPrimaryStage(Stage mainStage) {
@@ -39,6 +48,7 @@ public class AppController {
     }
 
     public void changeUserName(String name){
-        
+        centerComponentController.changeUserName(name);
     }
+
 }

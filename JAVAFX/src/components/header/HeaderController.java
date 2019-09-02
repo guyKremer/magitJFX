@@ -35,11 +35,13 @@ public class HeaderController {
         popupWindow.initOwner(mainController.getPrimaryStage());
         URL url = getClass().getResource(CommonResourcesPaths.ONE_INPUT_POPUP);
         fxmlLoader.setLocation(url);
+        Parent root = fxmlLoader.load(url.openStream());
         OneInputPopupController oneInputPopupController = (OneInputPopupController) fxmlLoader.getController();
+        oneInputPopupController.setPrimaryStage(popupWindow);
+        oneInputPopupController.setTitle("Insert User Name:");
         oneInputPopupController.setConsumer(input -> {
             mainController.changeUserName(input);
         });
-        Parent root = fxmlLoader.load(url.openStream());
         Scene scene = new Scene(root, 300, 200);
         popupWindow.setScene(scene);
         popupWindow.show();
