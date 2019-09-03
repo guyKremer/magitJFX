@@ -10,15 +10,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.io.File;
 import java.net.URL;
 
 public class HeaderController {
 
     private AppController mainController;
+    private MenuItem loadFromXml;
 
      @FXML
      private MenuItem changeUserName;
@@ -45,5 +48,24 @@ public class HeaderController {
         Scene scene = new Scene(root, 300, 200);
         popupWindow.setScene(scene);
         popupWindow.show();
+    }
+
+    @FXML
+    public void loadRepositoryFromXmlActionListener(ActionEvent actionEvent){
+        File file;
+        file = showFileChooserDialog();
+        if(file != null){
+            mainController.loadFromXml(file);
+        }
+    }
+
+    public File showFileChooserDialog(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("xml Files", "*.xml"));
+        File selectedFile = fileChooser.showOpenDialog(mainController.getPrimaryStage());
+
+        return selectedFile;
     }
 }

@@ -104,8 +104,12 @@
    <top>
       <HBox prefHeight="43.0" prefWidth="602.0" BorderPane.alignment="CENTER">
          <children>
-            <Label prefHeight="17.0" prefWidth="30.0" text="User:" />
-            <Text fx:id="userName" disable="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Administrator" />
+            <Label prefHeight="17.0" prefWidth="31.0" text="User:" HBox.hgrow="ALWAYS" />
+            <Text fx:id="userName" disable="true" strokeType="OUTSIDE" strokeWidth="0.0" text="Administrator" wrappingWidth="95.65118408203125" HBox.hgrow="ALWAYS" />
+            <Label prefHeight="17.0" prefWidth="100.0" text="Repository Name:" HBox.hgrow="ALWAYS" />
+            <Text fx:id="repoName" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="53.11595153808594" HBox.hgrow="ALWAYS" />
+            <Label prefHeight="17.0" prefWidth="91.0" text="Repository path:" HBox.hgrow="ALWAYS" />
+            <Text fx:id="repoPath" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="199.73662719130516" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </top>

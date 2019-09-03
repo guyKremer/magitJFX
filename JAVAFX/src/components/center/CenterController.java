@@ -4,9 +4,14 @@ import components.app.AppController;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
 
+import java.io.File;
+import java.util.function.BiConsumer;
+
 public class CenterController {
 
     @FXML private Text userName;
+    @FXML private Text repoName;
+    @FXML private Text repoPath;
 
     private AppController mainController;
     public void setMainController(AppController mainController) {
@@ -15,5 +20,13 @@ public class CenterController {
 
     public void changeUserName(String name){
         mainController.getEngineAdapter().ChangeUserName(name, userName.textProperty()::set);
+    }
+
+    public void loadFromXml(File file) {
+        BiConsumer<String,String> biConsumer = (a,b)->{
+            repoName.textProperty().set(a);
+            repoPath.textProperty().set(b);
+        };
+        mainController.getEngineAdapter().LoadFromXml(file, biConsumer);
     }
 }

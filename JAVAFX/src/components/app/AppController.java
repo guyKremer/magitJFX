@@ -10,6 +10,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import logic.EngineAdapter;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 public class AppController {
@@ -49,6 +50,10 @@ public class AppController {
 
     public void changeUserName(String name){
         centerComponentController.changeUserName(name);
+    }
+
+    public void loadFromXml(File file){
+        centerComponentController.loadFromXml(file);
     }
 
 }

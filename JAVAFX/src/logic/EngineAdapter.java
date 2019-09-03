@@ -3,7 +3,10 @@ package logic;
 import Engine.Engine;
 import javafx.concurrent.Task;
 import logic.tasks.ChangeUserNameTask;
+import logic.tasks.LoadFromXmlTask;
 
+import java.io.File;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class EngineAdapter {
@@ -16,4 +19,10 @@ public class EngineAdapter {
         currentRunningTask = new ChangeUserNameTask(engine, name, inputDelegate);
         new Thread(currentRunningTask).start();
     }
+
+    public void LoadFromXml(File file, BiConsumer<String,String> repDetailsDelegate){
+        currentRunningTask = new LoadFromXmlTask(engine, file.getPath(), repDetailsDelegate);
+        new Thread(currentRunningTask).start();
+    }
+
 }
