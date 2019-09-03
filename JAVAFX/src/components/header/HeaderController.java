@@ -9,7 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -17,14 +19,15 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.net.URL;
+import java.util.Optional;
 
 public class HeaderController {
 
     private AppController mainController;
-    private MenuItem loadFromXml;
 
-     @FXML
-     private MenuItem changeUserName;
+    @FXML private MenuItem loadFromXml;
+    @FXML private MenuItem changeUserName;
+    @FXML private MenuItem createNewRepo;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -59,9 +62,28 @@ public class HeaderController {
         }
     }
 
+    @FXML
+    public void createNewRepoActionListener(ActionEvent actionEvent){
+
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("Select Repository directory");
+        File selectedDirectory = directoryChooser.showDialog(mainController.getPrimaryStage());
+
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Repository Name");
+        dialog.setHeaderText("Repository Name");
+        dialog.setContentText("Please Enter Your Repository Name:");
+
+        Optional<String> result = dialog.showAndWait();
+
+        if(selectedDirectory != null){
+            mainController.createNewRepo(selectedDirectory.getPath(), result.get());
+        }
+}
+
     public File showFileChooserDialog(){
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Resource File");
+        fileChooser.setTitle("Select XML File");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("xml Files", "*.xml"));
         File selectedFile = fileChooser.showOpenDialog(mainController.getPrimaryStage());
