@@ -60,4 +60,15 @@ public class AppController {
         centerComponentController.createNewRepo(path, repoName);
     }
 
+    public void switchRepo(String path) {
+        centerComponentController.switchRepo(path);
+    }
+
+    public void createNewBranch(String branchName, boolean checkout) {
+        centerComponentController.createNewBranch(branchName, checkout);
+    }
+
+    public void checkout(String branchName) {
+        centerComponentController.checkout(branchName);
+    }
 }

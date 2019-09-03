@@ -14,15 +14,15 @@
                         <MenuItem fx:id="changeUserName" mnemonicParsing="false" onAction="#changeNameActionListener" text="Change User Name" />
                         <MenuItem fx:id="loadFromXml" mnemonicParsing="false" onAction="#loadRepositoryFromXmlActionListener" text="Load From XML" />
                         <MenuItem fx:id="createNewRepo" mnemonicParsing="false" onAction="#createNewRepoActionListener" text="Create New Repository" />
-                        <MenuItem mnemonicParsing="false" text="Switch Repository" />
+                        <MenuItem fx:id="switchRepo" mnemonicParsing="false" onAction="#switchRepoActionListener" text="Switch Repository" />
                         <MenuItem mnemonicParsing="false" text="Export To XML" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Branches">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Show All Branches" />
-                        <MenuItem mnemonicParsing="false" text="Create New Branch" />
-                        <MenuItem mnemonicParsing="false" text="Checkout" />
+                        <MenuItem fx:id="showAllBranches" mnemonicParsing="false" onAction="#showAllBranchesActiveListener" text="Show All Branches" />
+                        <MenuItem fx:id="createNewBranch" mnemonicParsing="false" onAction="#createNewBranchActionListener" text="Create New Branch" />
+                        <MenuItem fx:id="checkout" mnemonicParsing="false" onAction="#checkoutActionListener" text="Checkout" />
                         <MenuItem mnemonicParsing="false" text="Reset Branch" />
                         <MenuItem mnemonicParsing="false" text="Merge" />
                     </items>
