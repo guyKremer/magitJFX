@@ -23,7 +23,7 @@ public class LoadFromXmlTask extends Task<Boolean> {
 
     @Override
     protected Boolean call() throws Exception {
-        engine.setcurrentRepository(xmlUtiles.LoadXml(file));
+        engine.setCurrentRepository(xmlUtiles.LoadXml(file));
         Platform.runLater(
                 () -> repDetailsDelegate.accept(engine.GetCurrentRepository().GetName(),
                         engine.GetCurrentRepository().GetRepositoryPath().toString())
