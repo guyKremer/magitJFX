@@ -13,7 +13,7 @@
                     <items>
                         <MenuItem fx:id="changeUserName" mnemonicParsing="false" onAction="#changeNameActionListener" text="Change User Name" />
                         <MenuItem fx:id="loadFromXml" mnemonicParsing="false" onAction="#loadRepositoryFromXmlActionListener" text="Load From XML" />
-                        <MenuItem mnemonicParsing="false" text="Create New Repository" />
+                        <MenuItem fx:id="createNewRepo" mnemonicParsing="false" onAction="#createNewRepoActionListener" text="Create New Repository" />
                         <MenuItem mnemonicParsing="false" text="Switch Repository" />
                         <MenuItem mnemonicParsing="false" text="Export To XML" />
                     </items>

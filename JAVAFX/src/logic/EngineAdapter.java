@@ -3,6 +3,7 @@ package logic;
 import Engine.Engine;
 import javafx.concurrent.Task;
 import logic.tasks.ChangeUserNameTask;
+import logic.tasks.CreateNewRepoTask;
 import logic.tasks.LoadFromXmlTask;
 
 import java.io.File;
@@ -25,4 +26,8 @@ public class EngineAdapter {
         new Thread(currentRunningTask).start();
     }
 
+    public void CreateNewRepo(String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
+        currentRunningTask = new CreateNewRepoTask(engine, path ,repoName, repDetailsDelegate);
+        new Thread(currentRunningTask).start();
+    }
 }

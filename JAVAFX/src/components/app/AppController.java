@@ -56,4 +56,8 @@ public class AppController {
         centerComponentController.loadFromXml(file);
     }
 
+    public void createNewRepo(String path, String repoName){
+        centerComponentController.createNewRepo(path, repoName);
+    }
+
 }

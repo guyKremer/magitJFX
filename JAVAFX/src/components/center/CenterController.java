@@ -29,4 +29,12 @@ public class CenterController {
         };
         mainController.getEngineAdapter().LoadFromXml(file, biConsumer);
     }
+
+    public void createNewRepo(String path, String repName) {
+        BiConsumer<String,String> biConsumer = (a,b)->{
+            repoName.textProperty().set(a);
+            repoPath.textProperty().set(b);
+        };
+        mainController.getEngineAdapter().CreateNewRepo(path,repName,biConsumer);
+    }
 }
