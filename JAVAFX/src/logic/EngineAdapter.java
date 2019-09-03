@@ -1,12 +1,14 @@
 package logic;
 
 import Engine.Engine;
+import Engine.MagitObjects.Commit;
 import javafx.concurrent.Task;
 import logic.tasks.ChangeUserNameTask;
 import logic.tasks.CreateNewRepoTask;
 import logic.tasks.LoadFromXmlTask;
 
 import java.io.File;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -29,5 +31,9 @@ public class EngineAdapter {
     public void CreateNewRepo(String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
         currentRunningTask = new CreateNewRepoTask(engine, path ,repoName, repDetailsDelegate);
         new Thread(currentRunningTask).start();
+    }
+
+    public List<Commit> getAllCommits() {
+
     }
 }

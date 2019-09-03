@@ -58,6 +58,7 @@ public class AppController {
 
     public void createNewRepo(String path, String repoName){
         centerComponentController.createNewRepo(path, repoName);
+        centerComponentController.addCommitToTree();
     }
 
 }
