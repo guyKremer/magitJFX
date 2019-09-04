@@ -6,6 +6,7 @@ import javafx.scene.text.Text;
 
 import java.io.File;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class CenterController {
 
@@ -36,5 +37,21 @@ public class CenterController {
             repoPath.textProperty().set(b);
         };
         mainController.getEngineAdapter().CreateNewRepo(path,repName,biConsumer);
+    }
+
+    public void switchRepo(String path) {
+        BiConsumer<String,String> biConsumer = (a,b)->{
+            repoName.textProperty().set(a);
+            repoPath.textProperty().set(b);
+        };
+        mainController.getEngineAdapter().SwitchRepo(path,biConsumer);
+    }
+
+    public void createNewBranch(String branchName, boolean checkout) {
+        mainController.getEngineAdapter().createNewBranch(branchName, checkout);
+    }
+
+    public void checkout(String branchName) {
+        mainController.getEngineAdapter().checkout(branchName);
     }
 }

@@ -8,8 +8,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -18,6 +21,7 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -29,6 +33,10 @@ public class HeaderController {
     @FXML private MenuItem changeUserName;
     @FXML private MenuItem createNewRepo;
     @FXML private MenuItem merge;
+    @FXML private MenuItem switchRepo;
+    @FXML private MenuItem showAllBranches;
+    @FXML private MenuItem createNewBranch;
+    @FXML private MenuItem checkout;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -65,22 +73,108 @@ public class HeaderController {
 
     @FXML
     public void createNewRepoActionListener(ActionEvent actionEvent){
+        File file;
+        String repoName;
 
+        file = showDirChooserDialog();
+
+        repoName = showTextInputDialog("Repository Name","Repository Name", "Please Enter Repository Name");
+
+        if(file != null){
+            mainController.createNewRepo(file.getPath(), repoName);
+        }
+    }
+
+    @FXML
+    public void switchRepoActionListener(ActionEvent actionEvent){
+        File file;
+
+        file = showDirChooserDialog();
+
+        if(file != null){
+            mainController.switchRepo(file.getPath());
+        }
+    }
+
+    @FXML
+    public void showAllBranchesActiveListener(ActionEvent actionEvent) throws IOException {
+        String allBranches;
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle("Repository Branches");
+        alert.setHeaderText("Repository Branches");
+
+        allBranches = mainController.getEngineAdapter().showAllBranches();
+        alert.setContentText(allBranches);
+        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void createNewBranchActionListener(ActionEvent actionEvent) throws IOException {
+        String branchName;
+        boolean checkout, discardChanges = true;
+
+        branchName = showTextInputDialog("New Branch","New Branch", "Enter new Branch Name");
+        checkout = showConfirmationDialog("Checkout", "Checkout Branch","Checkout to new branch");
+
+        if(mainController.getEngineAdapter().checkChangesBeforeOperation()) {
+            discardChanges = showConfirmationDialog("Confirm discard changes", "You have changes" ,
+                    "You have open changes, if you continue this operation all uncomitted changes will be lost");
+
+        }
+
+        mainController.createNewBranch(branchName, checkout);
+    }
+
+    @FXML
+    public void checkoutActionListener(ActionEvent actionEvent){
+        String branchName;
+        boolean checkout = false;
+
+        branchName = showTextInputDialog("Checkout Branch","Checkout Branch", "Enter Branch Name");
+
+        mainController.checkout(branchName);
+    }
+
+
+    public boolean showConfirmationDialog(String Title, String Header, String content){
+        boolean res = false;
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Checkout");
+        alert.setHeaderText("Checkout Branch");
+        alert.setContentText("Checkout to the new branch");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            res = true;
+        } else {
+            res = false;
+        }
+        return res;
+    }
+
+    public String showTextInputDialog(String title,String header, String content){
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(title);
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
+
+        Optional<String> result = dialog.showAndWait();
+
+        return result.get();
+    }
+
+    public File showDirChooserDialog(){
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select Repository directory");
         File selectedDirectory = directoryChooser.showDialog(mainController.getPrimaryStage());
 
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Repository Name");
-        dialog.setHeaderText("Repository Name");
-        dialog.setContentText("Please Enter Your Repository Name:");
-
-        Optional<String> result = dialog.showAndWait();
-
-        if(selectedDirectory != null){
-            mainController.createNewRepo(selectedDirectory.getPath(), result.get());
-        }
-}
+        return selectedDirectory;
+    }
 
     @FXML
     public void mergeActionListener(ActionEvent actionEvent){
