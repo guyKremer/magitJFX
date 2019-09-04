@@ -4,6 +4,7 @@ import components.center.CenterController;
 import components.header.HeaderController;
 import components.left.leftController;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextFlow;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 import logic.EngineAdapter;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AppController {
@@ -60,4 +62,22 @@ public class AppController {
         centerComponentController.createNewRepo(path, repoName);
     }
 
+    public void merge() {
+        String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
+    }
+
+    public String showTextInputDialog(String title,String headerText,String contentText ){
+        TextInputDialog dialog = new TextInputDialog();
+
+        dialog.setTitle(title);
+        dialog.setHeaderText(headerText);
+        dialog.setContentText(contentText);
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            return result.get();
+        }
+        else{
+            return null;
+        }
+    }
 }

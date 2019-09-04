@@ -28,6 +28,7 @@ public class HeaderController {
     @FXML private MenuItem loadFromXml;
     @FXML private MenuItem changeUserName;
     @FXML private MenuItem createNewRepo;
+    @FXML private MenuItem merge;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -80,6 +81,12 @@ public class HeaderController {
             mainController.createNewRepo(selectedDirectory.getPath(), result.get());
         }
 }
+
+    @FXML
+    public void mergeActionListener(ActionEvent actionEvent){
+        mainController.merge();
+    }
+
 
     public File showFileChooserDialog(){
         FileChooser fileChooser = new FileChooser();

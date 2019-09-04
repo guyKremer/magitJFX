@@ -30,4 +30,8 @@ public class EngineAdapter {
         currentRunningTask = new CreateNewRepoTask(engine, path ,repoName, repDetailsDelegate);
         new Thread(currentRunningTask).start();
     }
+
+    public Engine getEngine() {
+        return engine;
+    }
 }
