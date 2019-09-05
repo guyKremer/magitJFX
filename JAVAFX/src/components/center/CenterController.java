@@ -54,4 +54,12 @@ public class CenterController {
     public void checkout(String branchName) {
         mainController.getEngineAdapter().checkout(branchName);
     }
+
+    public void deleteBranch(String branchName) {
+        mainController.getEngineAdapter().deleteBranch(branchName);
+    }
+
+    public void resetBranch(String sha1) {
+        mainController.getEngineAdapter().resetBranch(sha1);
+    }
 }

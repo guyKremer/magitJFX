@@ -3,7 +3,6 @@ package logic;
 import Engine.Engine;
 import Engine.*;
 import Engine.MagitObjects.Branch;
-import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
 import logic.tasks.*;
 
@@ -99,5 +98,17 @@ public class EngineAdapter {
         }
 
         return res;
+    }
+
+    public void deleteBranch(String branchName) {
+        currentRunningTask = new DeleteBranchTask(engine, branchName);
+        new Thread(currentRunningTask).start();
+    }
+
+    public void resetBranch(String sha1){
+        currentRunningTask = new ResetBranchTask(engine, sha1);
+        new Thread(currentRunningTask).start();
+
+
     }
 }

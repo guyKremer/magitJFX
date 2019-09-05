@@ -71,4 +71,12 @@ public class AppController {
     public void checkout(String branchName) {
         centerComponentController.checkout(branchName);
     }
+
+    public void deleteBranch(String branchName) {
+        centerComponentController.deleteBranch(branchName);
+    }
+
+    public void resetBranch(String sha1) {
+        centerComponentController.resetBranch(sha1);
+    }
 }
