@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class EngineAdapter {
 
@@ -88,10 +89,13 @@ public class EngineAdapter {
         new Thread(currentRunningTask).start();
     }
 
+
     public void checkout(String branchName) {
         currentRunningTask = new CheckoutTask(engine, branchName);
         new Thread(currentRunningTask).start();
     }
+
+
 
     public boolean checkChangesBeforeOperation() throws IOException {
         Boolean res = false;
@@ -102,5 +106,9 @@ public class EngineAdapter {
         }
 
         return res;
+    }
+
+    public void merge(String branchName) {
+        currentRunningTask = new MergeTask(engine,branchName);
     }
 }

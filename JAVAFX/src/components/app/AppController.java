@@ -1,5 +1,6 @@
 package components.app;
 
+import Engine.Engine;
 import components.center.CenterController;
 import components.header.HeaderController;
 import components.left.leftController;
@@ -64,21 +65,22 @@ public class AppController {
 
     public void merge() {
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
+        engineAdapter.merge(branchName);
     }
 
-    public String showTextInputDialog(String title,String headerText,String contentText ){
+    public String showTextInputDialog(String title,String headerText,String contentText ) {
         TextInputDialog dialog = new TextInputDialog();
 
         dialog.setTitle(title);
         dialog.setHeaderText(headerText);
         dialog.setContentText(contentText);
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
+        if (result.isPresent()) {
             return result.get();
-        }
-        else{
+        } else {
             return null;
         }
+    }
     public void switchRepo(String path) {
         centerComponentController.switchRepo(path);
     }
