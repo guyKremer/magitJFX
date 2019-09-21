@@ -229,7 +229,7 @@ public class Engine {
                 return null;
            }
         });
-        System.out.println(anf.traceAncestor(oursSha1,theirsSha1));
+
         return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
     }
 }

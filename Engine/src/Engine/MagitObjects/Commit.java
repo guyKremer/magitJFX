@@ -93,7 +93,9 @@ public class Commit implements CommitRepresentative {
             if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
                 m_prevCommitSha1Array.add(1,null);
             }
-            m_prevCommitSha1Array.add(1, i_sha1);
+            else{
+                m_prevCommitSha1Array.add(1, i_sha1);
+            }
     }
 
     public void setM_dateOfCreation(String i_date){
