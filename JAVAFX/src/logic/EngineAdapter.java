@@ -3,6 +3,7 @@ package logic;
 import Engine.Engine;
 import Engine.*;
 import Engine.MagitObjects.Branch;
+import Engine.MagitObjects.Commit;
 import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
 import logic.tasks.*;
@@ -110,5 +111,12 @@ public class EngineAdapter {
 
     public void merge(String branchName) {
         currentRunningTask = new MergeTask(engine,branchName);
+        new Thread(currentRunningTask).start();
+
+    }
+
+    public void Commit(String message, Consumer<Commit> commitConsumer) {
+        currentRunningTask = new CommitTask(engine,message,commitConsumer);
+        new Thread(currentRunningTask).start();
     }
 }

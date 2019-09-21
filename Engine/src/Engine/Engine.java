@@ -5,6 +5,8 @@ import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.Repository;
 
 import org.apache.commons.io.FileUtils;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
+import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -15,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -81,6 +84,7 @@ public class Engine {
             throw new FileNotFoundException(i_pathToRepo + " is not a repository");
         }
         else{
+            System.out.println("switch");
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
         }
@@ -112,6 +116,7 @@ public class Engine {
     }
 
     public Branch GetHeadBranch() {
+        System.out.println(m_currentRepository);
         return m_currentRepository.GetHeadBranch();
     }
 
@@ -197,4 +202,31 @@ public class Engine {
         m_currentRepository.AddBranch(i_branchName,i_checkout);
     }
 
+    public void Merge(String i_theirs)throws FileNotFoundException,IOException{
+        Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
+        Commit nca;
+        //if exists
+        if(theirsBranch!= null){
+            nca =  getAncestor(theirsBranch);
+            System.out.println(nca);
+            checkConflicts(nca);
+        }
+    }
+
+    private void checkConflicts(Commit nca) {
+    }
+
+    private Commit getAncestor(Branch i_theirsBranch)throws FileNotFoundException,IOException {
+        String oursSha1 = m_currentRepository.GeCurrentCommit().getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        AncestorFinder anf = new AncestorFinder(sha1->{
+           try{
+              return new Commit((sha1));
+           }
+           catch (IOException e ){
+                return null;
+           }
+        });
+        return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
+    }
 }

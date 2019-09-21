@@ -76,7 +76,7 @@ public class Commit implements CommitRepresentative {
                 return m_prevCommitSha1Array.get(1);
         }
         else{
-            return null;
+            return "";
         }
     }
 
@@ -100,12 +100,7 @@ public class Commit implements CommitRepresentative {
     }
 
     public void setSecondPrecedingSha1(String i_sha1){
-        if(i_sha1.equals("null")){
-            m_prevCommitSha1Array=null;
-        }
-        else{
             m_prevCommitSha1Array.add(1, i_sha1);
-        }
     }
 
     public void setM_dateOfCreation(String i_date){
@@ -198,9 +193,9 @@ public class Commit implements CommitRepresentative {
 
         string.append(m_rootFolder.getSha1());
         string.append(System.getProperty("line.separator"));
-        string.append(getFirstPrecedingSha1());
+        string.append(m_prevCommitSha1Array.get(0));
         string.append(System.getProperty("line.separator"));
-        string.append(getSecondPrecedingSha1());
+        string.append(m_prevCommitSha1Array.get(1));
         string.append(System.getProperty("line.separator"));
         string.append(m_message);
         string.append(System.getProperty("line.separator"));

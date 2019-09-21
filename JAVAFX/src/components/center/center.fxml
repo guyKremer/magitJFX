@@ -48,6 +48,7 @@
                 <HBox prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label text="Author : " HBox.hgrow="ALWAYS" />
+                  <Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="10.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
@@ -56,16 +57,20 @@
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Label>
+                  <Text fx:id="dateText1" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="37.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label text="Commit SHA1 :" HBox.hgrow="ALWAYS" />
+                  <Text fx:id="commitSha1Text" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="494.53670501708984" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="64.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label text="Parents :" HBox.hgrow="ALWAYS" />
+                  <Text fx:id="parent1Sha1Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="277.3367042541504" />
+                  <Text fx:id="parent2Sha1Text" layoutX="55.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="268.5367012023926" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="91.0" prefHeight="94.0" prefWidth="600.0" VBox.vgrow="ALWAYS">

@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
@@ -37,6 +38,7 @@ public class HeaderController {
     @FXML private MenuItem showAllBranches;
     @FXML private MenuItem createNewBranch;
     @FXML private MenuItem checkout;
+    @FXML private Button commit;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -139,6 +141,16 @@ public class HeaderController {
         mainController.checkout(branchName);
     }
 
+    @FXML
+    public void commitActionListener(ActionEvent actionEvent){
+        String message =  showTextInputDialog("Commit","Commit", "Enter Commit Message");
+        mainController.Commit(message);
+    }
+    @FXML
+    public void mergeActionListener(ActionEvent actionEvent){
+        mainController.Merge();
+    }
+
 
     public boolean showConfirmationDialog(String Title, String Header, String content){
         boolean res = false;
@@ -175,12 +187,6 @@ public class HeaderController {
 
         return selectedDirectory;
     }
-
-    @FXML
-    public void mergeActionListener(ActionEvent actionEvent){
-        mainController.merge();
-    }
-
 
     public File showFileChooserDialog(){
         FileChooser fileChooser = new FileChooser();
