@@ -68,7 +68,7 @@ public class xmlUtiles {
         m_mr.setLocation(m_repository.GetRepositoryPath().toString());
         m_mr.setName(m_repository.GetRepositoryPath().getFileName().toString());
 
-        createMagitRepository();
+        //createMagitRepository();
         createXmlFile(i_path);
     }
 
@@ -81,7 +81,7 @@ public class xmlUtiles {
 
         jaxbMarshaller.marshal(m_mr, file);
     }
-
+    /*
     private static void createMagitRepository() throws IOException {
         MagitBlobs mBlobs = new MagitBlobs();
         MagitFolders mFolders = new MagitFolders();
@@ -116,18 +116,20 @@ public class xmlUtiles {
         pointedCommit.setId(i_branch.getCommitSha1());
         msb.setName(i_branch.getName());
         // not necessary in ex01
-        /*
-        msb.setIsRemote(false);
-        msb.setTracking(false);
-        msb.setTrackingAfter(null);
-        */
+
+        //msb.setIsRemote(false);
+        //msb.setTracking(false);
+        //msb.setTrackingAfter(null);
+
         m_msbList.add(msb);
 
         commit = new Commit(pointedCommit.getId());
         commitToMagitSingleCommit(commit);
         msb.setPointedCommit(pointedCommit);
     }
+    */
 
+    /*
     private static void commitToMagitSingleCommit(Commit i_commit) throws IOException {
         MagitSingleCommit msc = new MagitSingleCommit();
         PrecedingCommits precedingCommits;
@@ -157,6 +159,9 @@ public class xmlUtiles {
         }
 
     }
+     */
+
+
 
     private static void folderToMagitSingFolder(Folder i_folder, boolean i_isRootFolder) {
         MagitSingleFolder msf = new MagitSingleFolder();
@@ -398,19 +403,31 @@ public class xmlUtiles {
     }
 
     private static void createCommitRec(MagitSingleCommit i_msc, Map<String, String> i_map) throws IOException {
+        String secondCommitId = "", firstCommitId = "";
         if (i_msc.getPrecedingCommits() != null && i_msc.getPrecedingCommits().getPrecedingCommit().size() != 0) {
-            String id = i_msc.getPrecedingCommits().getPrecedingCommit().get(0).getId();
-            if (!i_map.containsKey(id)) {
-                createCommitRec(findById(id, m_mscList), i_map);
-            }
-            i_map.put(i_msc.getId(), parseCommit(i_msc, i_map.get(id)).getSha1());
+            firstCommitId = i_msc.getPrecedingCommits().getPrecedingCommit().get(0).getId();
 
-        } else {
-            i_map.put(i_msc.getId(), parseCommit(i_msc, null).getSha1());
+            if(i_msc.getPrecedingCommits().getPrecedingCommit().size() == 2){
+                secondCommitId = i_msc.getPrecedingCommits().getPrecedingCommit().get(1).getId();
+            }
+
+            if (!i_map.containsKey(firstCommitId)) {
+                createCommitRec(findById(firstCommitId, m_mscList), i_map);
+            }
+            if(secondCommitId != "" && !i_map.containsKey(secondCommitId)){
+                createCommitRec(findById(secondCommitId, m_mscList), i_map);
+            }
+            i_map.put(i_msc.getId(), parseCommit(i_msc, i_map.get(firstCommitId), i_map.get(secondCommitId)).getSha1());
+
+        }
+        else {
+            i_map.put(i_msc.getId(), parseCommit(i_msc, "","").getSha1());
         }
     }
 
-    private static Commit parseCommit(MagitSingleCommit i_msc, String i_prevCommitSha1) throws IOException {
+    private static Commit parseCommit(MagitSingleCommit i_msc,
+                                      String i_firstCommitSha1,
+                                      String i_secondCommitSha1) throws IOException {
         Commit commit;
         MagitSingleFolder folder = null;
         String id;
@@ -421,7 +438,8 @@ public class xmlUtiles {
         commit = new Commit(i_msc.getMessage(),
                 parseFolder(folder,
                         m_mr.getLocation()),
-                i_prevCommitSha1,
+                i_firstCommitSha1,
+                i_secondCommitSha1,
                 i_msc.getDateOfCreation(),
                 i_msc.getAuthor());
 
