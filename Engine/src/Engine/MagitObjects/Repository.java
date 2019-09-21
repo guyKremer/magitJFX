@@ -1,10 +1,8 @@
 package Engine.MagitObjects;
 
 import Engine.Engine;
-import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
 
@@ -14,8 +12,6 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class Repository {
     private String m_name;
@@ -26,9 +22,10 @@ public class Repository {
     private Branch m_headBranch;
     private Commit m_currentCommit=null;
     private Folder m_WC;
+    private Map<String,Commit> m_commitsMap = new HashMap<String, Commit>();
 
     // getters
-
+    public Map<String, Commit> GetCommitsMap(){ return m_commitsMap;}
 
     public String GetName() {
         return m_name;
@@ -185,6 +182,8 @@ public class Repository {
         m_headBranch.flushBranch();
         Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(m_currentCommit.getSha1())
                 ,m_currentCommit.toString());
+
+        m_commitsMap.put(m_currentCommit.getSha1(), m_currentCommit);
     }
 
     public void loadCommitFromBranch(Branch i_branch)throws java.io.IOException{
