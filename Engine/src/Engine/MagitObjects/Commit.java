@@ -105,7 +105,7 @@ public class Commit implements CommitRepresentative {
     }
 
     public void unzipRootDirectory(List<String> i_commitLines){
-        m_rootFolder = new Folder(Repository.m_repositoryPath,i_commitLines.get(0),i_commitLines.get(4),i_commitLines.get(3));
+        m_rootFolder = new Folder(Repository.m_repositoryPath,i_commitLines.get(0),i_commitLines.get(5),i_commitLines.get(4));
         m_rootFolder.unzipAndSaveFolder(i_commitLines.get(0));
     }
 
@@ -163,7 +163,6 @@ public class Commit implements CommitRepresentative {
 
         for (int i=0; i < i_lines.size(); i++) {
             switch(i){
-
                 case 1:setFirstPrecedingSha1(i_lines.get(i));
                     break;
                 case 2:setSecondPrecedingSha1(i_lines.get(i));
