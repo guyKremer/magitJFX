@@ -88,7 +88,7 @@ public class HeaderController {
     }
 
     @FXML
-    public void switchRepoActionListener(ActionEvent actionEvent){
+    public void switchRepoActionListener(ActionEvent actionEvent) throws IOException, InterruptedException {
         File file;
 
         file = showDirChooserDialog();

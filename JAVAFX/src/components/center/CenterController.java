@@ -35,20 +35,18 @@ public class CenterController {
     @FXML private Text repoName;
     @FXML private Text repoPath;
     @FXML private ScrollPane m_TreeScrollPane;
-    @FXML private Text author;
-    @FXML private Text date;
-    @FXML private Text commitSHA1;
-    @FXML private TextArea commitParents;
 
-    //need to add logic to engine
-    @FXML private TextFlow changedFiles;
-    @FXML private TextFlow addedFiles;
-    @FXML private TextFlow deletedFiles;
     @FXML private Text authorText;
     @FXML private Text dateText;
     @FXML private Text commitSha1Text;
     @FXML private Text parent1Sha1Text;
     @FXML private Text parent2Sha1Text;
+    @FXML private TextArea commitMsg;
+
+    //need to add logic to engine
+    @FXML private TextFlow changedFiles;
+    @FXML private TextFlow addedFiles;
+    @FXML private TextFlow deletedFiles;
 
     private AppController mainController;
 
@@ -56,8 +54,7 @@ public class CenterController {
         this.mainController = mainController;
     }
 
-    public void ResetCommitsTree()
-    {
+    public void ResetCommitsTree() throws IOException {
         m_TreeGraph = new Graph();
 
         initComponentsInTree();
@@ -66,8 +63,7 @@ public class CenterController {
         m_TreeScrollPane.setContent(canvas);
     }
 
-    private void initComponentsInTree()
-    {
+    private void initComponentsInTree() throws IOException {
         m_TreeGraph.beginUpdate();
 
         createCommits();
@@ -94,14 +90,14 @@ public class CenterController {
 
     //code duplicate.. wrap to one function
     private void addEdgesToCommit(Commit i_Commit, Model i_Model) throws IOException {
-        if (i_Commit.getFirstPrecedingSha1() != "")
+        if (!i_Commit.getFirstPrecedingSha1().isEmpty())
         {
             final Edge edgeFirstPrev = new Edge(m_MapCommitToIcell
                     .get(i_Commit), m_MapCommitToIcell.get(new Commit(i_Commit.getFirstPrecedingSha1())));
             i_Model.addEdge(edgeFirstPrev);
         }
 
-        if (i_Commit.getSecondPrecedingSha1() != "")
+        if (!i_Commit.getSecondPrecedingSha1().isEmpty())
         {
             final Edge edgeSecondPrev = new Edge(m_MapCommitToIcell.get(i_Commit), m_MapCommitToIcell
                     .get(new Commit(i_Commit.getSecondPrecedingSha1())));
@@ -109,8 +105,7 @@ public class CenterController {
         }
     }
 
-    private void createCommits()
-    {
+    private void createCommits() throws IOException {
         mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetCommitsMap()
                 .values()
                 .stream()
@@ -141,9 +136,20 @@ public class CenterController {
     }
 
     private void onCommitNodeClicked(Commit i_commit){
-        author.setText(i_commit.getCreator());
-        date.setText(i_commit.getDateOfCreation());
-        commitSHA1.setText(i_commit.);
+        authorText.setText(i_commit.getCreator());
+        dateText.setText(i_commit.getDateOfCreation());
+        commitSha1Text.setText(i_commit.getSha1());
+        if(!i_commit.getFirstPrecedingSha1().isEmpty()) {
+            parent1Sha1Text.setText(i_commit.getFirstPrecedingSha1());
+        }
+        if(!i_commit.getSecondPrecedingSha1().isEmpty()){
+            parent2Sha1Text.setText(i_commit.getSecondPrecedingSha1());
+        }
+
+        commitMsg.setText(i_commit.getMessage());
+
+        //need to add status
+
     }
 
     private String appendBranchNames(List<Branch> i_BranchesOfCommit)
@@ -190,7 +196,7 @@ public class CenterController {
         mainController.getEngineAdapter().CreateNewRepo(path,repName,biConsumer);
     }
 
-    public void switchRepo(String path) {
+    public void switchRepo(String path) throws IOException, InterruptedException {
         BiConsumer<String,String> biConsumer = (a,b)->{
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);

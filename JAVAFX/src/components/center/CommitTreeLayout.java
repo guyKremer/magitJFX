@@ -62,11 +62,11 @@ public class CommitTreeLayout implements Layout {
                 {
                     boolean firstPrev = false, secondPrev = false;
 
-                    if (commit.getFirstPrecedingSha1() != "") {
+                    if (!commit.getFirstPrecedingSha1().isEmpty()) {
                         firstPrev = commit.getFirstPrecedingSha1().equals(i_CurrentCommit.getSha1());
                     }
 
-                    if (commit.getSecondPrecedingSha1() != "") {
+                    if (!commit.getSecondPrecedingSha1().isEmpty()) {
                         secondPrev = commit.getSecondPrecedingSha1().equals(i_CurrentCommit.getSha1());
                     }
                     return secondPrev || firstPrev;

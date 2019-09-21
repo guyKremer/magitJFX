@@ -28,7 +28,7 @@
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Label>
-                  <Text fx:id="dateText1" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
+                  <Text fx:id="dateText" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="37.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
@@ -40,13 +40,13 @@
                 <HBox layoutX="10.0" layoutY="64.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label text="Parents :" HBox.hgrow="ALWAYS" />
-                  <Text fx:id="parent1Sha1Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="277.3367042541504" />
-                  <Text fx:id="parent2Sha1Text" layoutX="55.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="268.5367012023926" />
+                  <Text fx:id="parent1Sha1Text" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="277.3367042541504" />
+                  <Text fx:id="parent2Sha1Text" layoutX="55.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="268.5367012023926" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="91.0" prefHeight="94.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <TextArea fx:id="commitParents" prefHeight="42.0" prefWidth="471.0" wrapText="true" HBox.hgrow="ALWAYS" />
+                        <TextArea fx:id="commitMsg" prefHeight="42.0" prefWidth="471.0" wrapText="true" HBox.hgrow="ALWAYS" />
                     </children>
                <VBox.margin>
                   <Insets top="5.0" />

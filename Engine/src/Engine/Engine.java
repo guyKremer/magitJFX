@@ -84,7 +84,6 @@ public class Engine {
             throw new FileNotFoundException(i_pathToRepo + " is not a repository");
         }
         else{
-            System.out.println("switch");
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
         }

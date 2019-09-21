@@ -26,7 +26,7 @@ public class Commit implements CommitRepresentative {
     private String m_sha1;
     private String m_message;
     private Folder m_rootFolder;
-    private List<String> m_prevCommitSha1Array ;
+    private List<String> m_prevCommitSha1Array  = new ArrayList<String>();
     private String m_dateOfCreation;
     private String m_creator;
 

@@ -40,9 +40,11 @@ public class EngineAdapter {
     public Engine getEngine() {
         return engine;
     }
-    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate) {
+    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate) throws InterruptedException {
         currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate);
-        new Thread(currentRunningTask).start();
+        Thread  t = new Thread(currentRunningTask);//.start();
+        t.start();
+        t.join();
     }
 
     public String showAllBranches() throws IOException {
