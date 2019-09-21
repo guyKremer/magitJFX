@@ -42,7 +42,7 @@ public class Commit implements CommitRepresentative {
         unzipCommit(i_sha1);
     }
 
-    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,String i_SecondCommitSha1,
+    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,
                   String i_dateOfCreation, String i_creator)
     {
         m_message=i_message;
@@ -50,7 +50,7 @@ public class Commit implements CommitRepresentative {
         m_rootFolder.saveInObjects();
         m_prevCommitSha1Array=new ArrayList<String>();
         m_prevCommitSha1Array.add(i_FirstCommitSha1);
-        m_prevCommitSha1Array.add(i_SecondCommitSha1);
+        m_prevCommitSha1Array.add(null);
         m_dateOfCreation=i_dateOfCreation;
         m_creator=i_creator;
         m_sha1=createSha1();
@@ -62,22 +62,12 @@ public class Commit implements CommitRepresentative {
 
     @Override
     public String getFirstPrecedingSha1() {
-        if(m_prevCommitSha1Array!= null){
-            return m_prevCommitSha1Array.get(0);
-        }
-        else{
-            return "";
-        }
+        return m_prevCommitSha1Array.get(0)==null? "":m_prevCommitSha1Array.get(0);
     }
 
     @Override
     public String getSecondPrecedingSha1() {
-        if(m_prevCommitSha1Array!= null){
-                return m_prevCommitSha1Array.get(1);
-        }
-        else{
-            return "";
-        }
+        return m_prevCommitSha1Array.get(1)==null? "":m_prevCommitSha1Array.get(1);
     }
 
     public String getMessage(){return m_message;}
@@ -91,15 +81,18 @@ public class Commit implements CommitRepresentative {
         m_message=i_message;
     }
     public void setFirstPrecedingSha1(String i_sha1){
-        if(i_sha1.equals("null")){
-            m_prevCommitSha1Array=null;
-        }
+        if(i_sha1 == null||i_sha1.isEmpty()||i_sha1.equals("null")){
+            m_prevCommitSha1Array.add(0,null);
+         }
         else{
             m_prevCommitSha1Array.add(0, i_sha1);
         }
     }
 
     public void setSecondPrecedingSha1(String i_sha1){
+            if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
+                m_prevCommitSha1Array.add(1,null);
+            }
             m_prevCommitSha1Array.add(1, i_sha1);
     }
 

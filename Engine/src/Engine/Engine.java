@@ -86,6 +86,7 @@ public class Engine {
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
+
         }
     }
 
@@ -115,7 +116,6 @@ public class Engine {
     }
 
     public Branch GetHeadBranch() {
-        System.out.println(m_currentRepository);
         return m_currentRepository.GetHeadBranch();
     }
 
@@ -210,6 +210,9 @@ public class Engine {
             System.out.println(nca);
             checkConflicts(nca);
         }
+        else{
+
+        }
     }
 
     private void checkConflicts(Commit nca) {
@@ -218,6 +221,7 @@ public class Engine {
     private Commit getAncestor(Branch i_theirsBranch)throws FileNotFoundException,IOException {
         String oursSha1 = m_currentRepository.GeCurrentCommit().getSha1();
         String theirsSha1 = i_theirsBranch.getCommitSha1();
+
         AncestorFinder anf = new AncestorFinder(sha1->{
            try{
               return new Commit((sha1));
@@ -226,6 +230,7 @@ public class Engine {
                 return null;
            }
         });
+        System.out.println(anf.traceAncestor(oursSha1,theirsSha1));
         return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
     }
 }

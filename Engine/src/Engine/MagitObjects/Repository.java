@@ -190,13 +190,14 @@ public class Repository {
          }
         m_WC.UpdateChangedFolderItems(status,pathToItemMap);
          if(m_currentCommit!=null){
-             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getFirstPrecedingSha1(),
-                     m_currentCommit.getSecondPrecedingSha1()
+             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getSha1()
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
+
          }
          else{
-             m_currentCommit = new Commit(i_message,m_WC,"",""
+             m_currentCommit = new Commit(i_message,m_WC,null
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
+             m_currentCommit.setSecondPrecedingSha1(null);
          }
 
         m_headBranch.setCommitSha1(m_currentCommit.getSha1());

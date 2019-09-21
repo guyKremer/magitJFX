@@ -65,7 +65,6 @@ public class AppController {
     }
 
     public void Merge() {
-        System.out.println("innnnnnn");
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
         engineAdapter.merge(branchName);
     }
