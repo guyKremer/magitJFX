@@ -86,7 +86,6 @@ public class Engine {
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
-
         }
     }
 
