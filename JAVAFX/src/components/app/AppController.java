@@ -63,7 +63,8 @@ public class AppController {
         centerComponentController.createNewRepo(path, repoName);
     }
 
-    public void merge() {
+    public void Merge() {
+        System.out.println("innnnnnn");
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
         engineAdapter.merge(branchName);
     }
@@ -92,4 +93,9 @@ public class AppController {
     public void checkout(String branchName) {
         centerComponentController.checkout(branchName);
     }
+
+    public void Commit(String message){
+        centerComponentController.Commit(message);
+    }
+
 }

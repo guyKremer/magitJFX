@@ -22,6 +22,9 @@ public class Branch {
         m_pathToBranch = i_pathToBranch;
         m_name = i_pathToBranch.getFileName().toString();
         m_commitSha1 = i_commitSha1;
+        if(m_commitSha1.equals("null")){
+            m_commitSha1=null;
+        }
         flushBranch();
     }
 
@@ -54,7 +57,7 @@ public class Branch {
     }
 
     public String getCommitMsg() throws FileNotFoundException,IOException {
-        if(m_commitSha1.isEmpty()){
+        if(m_commitSha1 == null || m_commitSha1.isEmpty()){
             throw new FileNotFoundException ("Nothing was committed in  " + m_name);
         }
         File unZippedCommit= Engine.Utils.UnzipFile(m_commitSha1);

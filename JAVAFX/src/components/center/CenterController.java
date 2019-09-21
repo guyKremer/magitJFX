@@ -44,6 +44,11 @@ public class CenterController {
     @FXML private TextFlow changedFiles;
     @FXML private TextFlow addedFiles;
     @FXML private TextFlow deletedFiles;
+    @FXML private Text authorText;
+    @FXML private Text dateText;
+    @FXML private Text commitSha1Text;
+    @FXML private Text parent1Sha1Text;
+    @FXML private Text parent2Sha1Text;
 
     private AppController mainController;
 
@@ -199,5 +204,16 @@ public class CenterController {
 
     public void checkout(String branchName) {
         mainController.getEngineAdapter().checkout(branchName);
+    }
+
+    public void Commit(String message) {
+        Consumer<Commit> commitConsumer = commit -> {
+            authorText.textProperty().set(commit.getCreator());
+            dateText.textProperty().set(commit.getDateOfCreation());
+            commitSha1Text.textProperty().set(commit.getSha1());
+            parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
+            parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
+        };
+        mainController.getEngineAdapter().Commit(message,commitConsumer);
     }
 }

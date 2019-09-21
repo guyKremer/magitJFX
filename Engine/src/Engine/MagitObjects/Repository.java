@@ -42,6 +42,9 @@ public class Repository {
     public Map<String, Branch> GetBranches() {
         return m_branches;
     }
+    public Branch GetBranch(String i_branchName){
+        return m_branches.get(i_branchName);
+    }
 
     public Branch GetHeadBranch() {
         return m_headBranch;
@@ -106,7 +109,7 @@ public class Repository {
         FileUtils.writeStringToFile(pathToBranchDirectory.resolve("HEAD").toFile(), "master", Charset.forName("utf-8"),false);
         Path masterPath = pathToBranchDirectory.resolve("master");
         Files.createFile(masterPath);
-        Branch master = new Branch(masterPath,"");
+        Branch master = new Branch(masterPath,"null");
         m_branches.put(master.getName(),master);
         SetHeadBranch(master);
     }
