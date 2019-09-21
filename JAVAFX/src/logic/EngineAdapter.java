@@ -111,8 +111,8 @@ public class EngineAdapter {
 
     public void merge(String branchName) {
         currentRunningTask = new MergeTask(engine,branchName);
-        new Thread(currentRunningTask).start();
-
+        currentRunningTask.run();
+       // new Thread(currentRunningTask).start();
     }
 
     public void Commit(String message, Consumer<Commit> commitConsumer) {
