@@ -302,7 +302,7 @@ public class Repository {
     private void switchRepository()throws java.io.IOException {
         loadBranches();
         setHeadBranchFromHead();
-        if(!m_headBranch.getCommitSha1().equals("")){
+        if(!(m_headBranch.getCommitSha1().equals("") || m_headBranch.getCommitSha1().equals("null"))){
             m_currentCommit = new Commit(m_headBranch.getCommitSha1());
             flushCommit();
         }

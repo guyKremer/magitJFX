@@ -85,6 +85,7 @@ public class Engine {
         }
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
+            System.out.println(path);
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
         }
     }
@@ -206,7 +207,6 @@ public class Engine {
         //if exists
         if(theirsBranch!= null){
             nca =  getAncestor(theirsBranch);
-            System.out.println(nca);
             checkConflicts(nca);
         }
         else{
@@ -223,7 +223,7 @@ public class Engine {
 
         AncestorFinder anf = new AncestorFinder(sha1->{
            try{
-              return new Commit((sha1));
+              return new Commit(sha1);
            }
            catch (IOException e ){
                 return null;
