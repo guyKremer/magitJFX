@@ -112,7 +112,7 @@ public class Repository {
         FileUtils.writeStringToFile(pathToBranchDirectory.resolve("HEAD").toFile(), "master", Charset.forName("utf-8"),false);
         Path masterPath = pathToBranchDirectory.resolve("master");
         Files.createFile(masterPath);
-        Branch master = new Branch(masterPath,"null");
+        Branch master = new Branch(masterPath,"");
         m_branches.put(master.getName(),master);
         SetHeadBranch(master);
     }
