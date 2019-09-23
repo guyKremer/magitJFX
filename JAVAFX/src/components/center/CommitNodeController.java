@@ -1,5 +1,6 @@
 package components.center;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
@@ -7,19 +8,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Circle;
 import puk.team.course.magit.ancestor.finder.*;
 
-import java.awt.event.ActionEvent;
-
 public class CommitNodeController {
-    @FXML
-    private Label commitTimeStampLabel;
-    @FXML
-    private Label messageLabel;
-    @FXML
-    private Label committerLabel;
-    @FXML
-    private Circle CommitCircle;
-    @FXML
-    private Label branchLabel;
+
+    @FXML private Label commitTimeStampLabel;
+    @FXML private Label messageLabel;
+    @FXML private Label committerLabel;
+    @FXML private Circle CommitCircle;
+    @FXML private Label branchLabel;
 
     public int getMessageLabel()
     {
@@ -44,24 +39,10 @@ public class CommitNodeController {
         messageLabel.setTooltip(new Tooltip(commitMessage));
     }
 
-    /*public int getCircleRadius()
-    {
-        return (int) CommitCircle.getRadius();
-    }*/
 
     public void setBranchName(String branchName)
     {
         branchLabel.setText(branchName);
         branchLabel.setTooltip(new Tooltip(branchName));
-    }
-
-    /*public Circle getCommitCircle()
-    {
-        return CommitCircle;
-    }*/
-
-    @FXML
-    void CommitNode_OnClICK(MouseEvent event) {
-
     }
 }

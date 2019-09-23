@@ -23,7 +23,7 @@ public class CommitTreeLayout implements Layout {
     @Override
     public void execute(Graph graph) {
         List<Commit> commitListByOrder = sortListByOrderOfCreation();
-        Map<String, Commit> mapPrevSHA1ToCommitFather = initMap();
+        //Map<String, Commit> mapPrevSHA1ToCommitFather = initMap();
         List<Commit> openCommits = new ArrayList<Commit>();
 
 
