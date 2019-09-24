@@ -127,7 +127,7 @@ public class Repository {
         FileUtils.writeStringToFile(pathToBranchDirectory.resolve("HEAD").toFile(), "master", Charset.forName("utf-8"),false);
         Path masterPath = pathToBranchDirectory.resolve("master");
         Files.createFile(masterPath);
-        Branch master = new Branch(masterPath,"null");
+        Branch master = new Branch(masterPath,"");
         m_branches.put(master.getName(),master);
         SetHeadBranch(master);
     }
@@ -190,12 +190,12 @@ public class Repository {
          }
         m_WC.UpdateChangedFolderItems(status,pathToItemMap);
          if(m_currentCommit!=null){
-             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getSha1()
+             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getSha1(),null
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
 
          }
          else{
-             m_currentCommit = new Commit(i_message,m_WC,null
+             m_currentCommit = new Commit(i_message,m_WC,null,null
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
              m_currentCommit.setSecondPrecedingSha1(null);
          }
@@ -319,7 +319,7 @@ public class Repository {
     private void switchRepository()throws java.io.IOException {
         loadBranches();
         setHeadBranchFromHead();
-        if(!m_headBranch.getCommitSha1().isEmpty()){
+        if(!(m_headBranch.getCommitSha1().equals("") || m_headBranch.getCommitSha1().equals("null"))){
             m_currentCommit = new Commit(m_headBranch.getCommitSha1());
             flushCommit();
         }
