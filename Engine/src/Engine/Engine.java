@@ -7,6 +7,7 @@ import Engine.MagitObjects.Repository;
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
+import puk.team.course.magit.ancestor.finder.MappingFunctionFailureException;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -210,11 +211,12 @@ public class Engine {
             checkConflicts(nca);
         }
         else{
-
+            
         }
     }
 
     private void checkConflicts(Commit nca) {
+
     }
 
     private Commit getAncestor(Branch i_theirsBranch)throws FileNotFoundException,IOException {
@@ -229,7 +231,11 @@ public class Engine {
                 return null;
            }
         });
-
-        return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
+        try{
+            return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
+        }
+        catch(MappingFunctionFailureException e){
+            return null;
+        }
     }
 }

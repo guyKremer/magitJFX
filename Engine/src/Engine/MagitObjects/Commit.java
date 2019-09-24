@@ -42,15 +42,15 @@ public class Commit implements CommitRepresentative {
         unzipCommit(i_sha1);
     }
 
-    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,
+    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,String i_SecondCommitSha1,
                   String i_dateOfCreation, String i_creator)
     {
         m_message=i_message;
         m_rootFolder=i_root;
         m_rootFolder.saveInObjects();
         m_prevCommitSha1Array=new ArrayList<String>();
-        m_prevCommitSha1Array.add(i_FirstCommitSha1);
-        m_prevCommitSha1Array.add(null);
+        setFirstPrecedingSha1(i_FirstCommitSha1);
+        setSecondPrecedingSha1(i_SecondCommitSha1);
         m_dateOfCreation=i_dateOfCreation;
         m_creator=i_creator;
         m_sha1=createSha1();
@@ -82,19 +82,39 @@ public class Commit implements CommitRepresentative {
     }
     public void setFirstPrecedingSha1(String i_sha1){
         if(i_sha1 == null||i_sha1.isEmpty()||i_sha1.equals("null")){
-            m_prevCommitSha1Array.add(0,null);
-         }
+            if(m_prevCommitSha1Array.isEmpty()){
+                m_prevCommitSha1Array.add(0, null);
+            }
+            else{
+                m_prevCommitSha1Array.set(0,null);
+            }
+        }
         else{
-            m_prevCommitSha1Array.add(0, i_sha1);
+            if(m_prevCommitSha1Array.isEmpty()){
+                m_prevCommitSha1Array.add(0, i_sha1);
+            }
+            else{
+                m_prevCommitSha1Array.set(0,i_sha1);
+            }
         }
     }
 
     public void setSecondPrecedingSha1(String i_sha1){
             if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
-                m_prevCommitSha1Array.add(1,null);
+                if(m_prevCommitSha1Array.isEmpty()){
+                    m_prevCommitSha1Array.add(1, null);
+                }
+                else{
+                    m_prevCommitSha1Array.set(1,null);
+                }
             }
             else{
-                m_prevCommitSha1Array.add(1, i_sha1);
+                if(m_prevCommitSha1Array.isEmpty()){
+                    m_prevCommitSha1Array.add(1, i_sha1);
+                }
+                else{
+                    m_prevCommitSha1Array.set(1,i_sha1);
+                }
             }
     }
 
