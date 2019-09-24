@@ -2,7 +2,6 @@ package logic.tasks;
 
 import Engine.Engine;
 import javafx.concurrent.Task;
-import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 
 public class MergeTask extends Task<Boolean> {
 

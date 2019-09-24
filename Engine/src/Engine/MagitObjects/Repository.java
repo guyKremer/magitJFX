@@ -25,9 +25,28 @@ public class Repository {
     private Commit m_currentCommit=null;
     private Folder m_WC;
     private Set<Integer> m_conflictsSet;
+    private Map<String,Commit> m_commitsMap = new HashMap<String, Commit>();
 
     // getters
+    public Map<String, Commit> GetCommitsMap() throws IOException {
+        Commit commit;
 
+        for (Map.Entry<String, Branch> entry : m_branches.entrySet()){
+            commit = new Commit(entry.getValue().getCommitSha1());
+            insertCommitsMapRec(commit);
+        }
+        return m_commitsMap;
+    }
+
+    private void insertCommitsMapRec(Commit commit) throws IOException {
+        m_commitsMap.put(commit.getSha1(),commit);
+        if(!commit.getFirstPrecedingSha1().isEmpty() && commit.getFirstPrecedingSha1() != null){
+            insertCommitsMapRec(new Commit(commit.getFirstPrecedingSha1()));
+        }
+        if(!commit.getSecondPrecedingSha1().isEmpty() && commit.getSecondPrecedingSha1() != null){
+            insertCommitsMapRec(new Commit(commit.getSecondPrecedingSha1()));
+        }
+    }
 
     public String GetName() {
         return m_name;
@@ -207,6 +226,8 @@ public class Repository {
         m_headBranch.flushBranch();
         Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(m_currentCommit.getSha1())
                 ,m_currentCommit.toString());
+
+        //m_commitsMap.put(m_currentCommit.getSha1(), m_currentCommit);
     }
 
     public void loadCommitFromBranch(Branch i_branch)throws java.io.IOException{

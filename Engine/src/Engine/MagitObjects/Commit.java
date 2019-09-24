@@ -12,12 +12,18 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Commit implements CommitRepresentative {
     private String m_sha1;
     private String m_message;
     private Folder m_rootFolder;
-    private List<String> m_prevCommitSha1Array=new ArrayList<>();
+    private List<String> m_prevCommitSha1Array  = new ArrayList<String>();
     private String m_dateOfCreation;
     private String m_creator;
 
@@ -29,8 +35,39 @@ public class Commit implements CommitRepresentative {
         m_creator=null;
     }
 
+    public Date GetDate(){
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy-hh:mm:ss:SSS");
+        Date date = null ;
+        try {
+            date = format.parse(m_dateOfCreation);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        return date;
+    }
+
     public Commit(String i_sha1) throws FileNotFoundException,IOException {
         unzipCommit(i_sha1);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) {
+            return true;
+        }
+
+        Commit c = (Commit) o;
+
+        // Compare the data members and return accordingly
+        return (this.m_sha1).equals(c.getSha1());
+    }
+
+    @Override
+    public int hashCode(){
+        return 1;
     }
 
     public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,String i_SecondCommitSha1,
@@ -91,22 +128,22 @@ public class Commit implements CommitRepresentative {
     }
 
     public void setSecondPrecedingSha1(String i_sha1){
-            if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
-                if(m_prevCommitSha1Array.size()<2){
-                    m_prevCommitSha1Array.add(1, null);
-                }
-                else{
-                    m_prevCommitSha1Array.set(1,null);
-                }
+        if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
+            if(m_prevCommitSha1Array.size()<2){
+                m_prevCommitSha1Array.add(1, null);
             }
             else{
-                if(m_prevCommitSha1Array.size()<2){
-                    m_prevCommitSha1Array.add(1, i_sha1);
-                }
-                else{
-                    m_prevCommitSha1Array.set(1,i_sha1);
-                }
+                m_prevCommitSha1Array.set(1,null);
             }
+        }
+        else{
+            if(m_prevCommitSha1Array.size()<2){
+                m_prevCommitSha1Array.add(1, i_sha1);
+            }
+            else{
+                m_prevCommitSha1Array.set(1,i_sha1);
+            }
+        }
     }
 
     public void setM_dateOfCreation(String i_date){

@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import logic.EngineAdapter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -55,8 +56,9 @@ public class AppController {
         centerComponentController.changeUserName(name);
     }
 
-    public void loadFromXml(File file){
+    public void loadFromXml(File file) throws InterruptedException, IOException {
         centerComponentController.loadFromXml(file);
+        centerComponentController.ResetCommitsTree();
     }
 
     public void createNewRepo(String path, String repoName){
@@ -81,8 +83,9 @@ public class AppController {
             return null;
         }
     }
-    public void switchRepo(String path) {
+    public void switchRepo(String path) throws IOException, InterruptedException {
         centerComponentController.switchRepo(path);
+        centerComponentController.ResetCommitsTree();
     }
 
     public void createNewBranch(String branchName, boolean checkout) {

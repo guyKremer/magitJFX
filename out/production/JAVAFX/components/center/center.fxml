@@ -1,47 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
 <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="473.0" prefWidth="602.0" stylesheets="@center.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.center.CenterController">
-    <center>
-        <GridPane prefWidth="602.0" BorderPane.alignment="CENTER">
-            <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="594.0" minWidth="10.0" prefWidth="279.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="594.0" minWidth="10.0" prefWidth="105.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="303.0" minWidth="6.0" prefWidth="112.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="303.0" minWidth="10.0" prefWidth="106.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-            </rowConstraints>
-            <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="123" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                <Text layoutX="10.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" />
-                <Text layoutX="288.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="2" />
-                <Text layoutX="392.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="3" />
-                <Text layoutX="504.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.rowIndex="1" />
-                <Text layoutX="10.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Text layoutX="288.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                <Text layoutX="392.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1432" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                <Text layoutX="504.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.rowIndex="2" />
-                <Text layoutX="10.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Text layoutX="288.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <Text layoutX="392.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            </children>
-        </GridPane>
-    </center>
     <bottom>
         <VBox id="commitData" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="190.0" prefWidth="602.0" stylesheets="@center.css" BorderPane.alignment="CENTER">
             <children>
@@ -57,7 +28,7 @@
                      <HBox.margin>
                         <Insets />
                      </HBox.margin></Label>
-                  <Text fx:id="dateText1" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
+                  <Text fx:id="dateText" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="88.13671875" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="37.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
@@ -69,13 +40,13 @@
                 <HBox layoutX="10.0" layoutY="64.0" prefHeight="27.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
                         <Label text="Parents :" HBox.hgrow="ALWAYS" />
-                  <Text fx:id="parent1Sha1Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="277.3367042541504" />
-                  <Text fx:id="parent2Sha1Text" layoutX="55.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="268.5367012023926" />
+                  <Text fx:id="parent1Sha1Text" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="277.3367042541504" />
+                  <Text fx:id="parent2Sha1Text" layoutX="55.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="268.5367012023926" />
                     </children>
                 </HBox>
                 <HBox layoutX="10.0" layoutY="91.0" prefHeight="94.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
                     <children>
-                        <TextArea prefHeight="42.0" prefWidth="471.0" wrapText="true" HBox.hgrow="ALWAYS" />
+                        <TextArea fx:id="commitMsg" prefHeight="42.0" prefWidth="471.0" wrapText="true" HBox.hgrow="ALWAYS" />
                     </children>
                <VBox.margin>
                   <Insets top="5.0" />
@@ -86,19 +57,19 @@
                         <VBox prefHeight="200.0" prefWidth="176.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="Changed Files" VBox.vgrow="ALWAYS" />
-                                <TextFlow prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
+                                <TextFlow fx:id="changedFiles" prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                         <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="176.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="Added Files" VBox.vgrow="ALWAYS" />
-                                <TextFlow prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
+                                <TextFlow fx:id="addedFiles" prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                         <VBox layoutX="186.0" layoutY="10.0" prefHeight="200.0" prefWidth="176.0" HBox.hgrow="ALWAYS">
                             <children>
                                 <Label text="Deleted Files" VBox.vgrow="ALWAYS" />
-                                <TextFlow prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
+                                <TextFlow fx:id="deletedFiles" prefHeight="73.0" prefWidth="145.0" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                     </children>
@@ -118,4 +89,15 @@
          </children>
       </HBox>
    </top>
+   <center>
+      <ScrollPane fx:id="m_TreeScrollPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="237.0" prefWidth="601.0">
+               <children>
+                  <Canvas height="236.0" width="602.0" />
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+   </center>
 </BorderPane>

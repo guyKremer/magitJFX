@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/commons-codec-1.12.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/commons-codec-1.12.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -19,7 +19,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Desktop/commons-io-2.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/commons-io-2.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../JAVA/commons-io-2.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/AncestorFinder.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -37,25 +37,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../JAVA/commons-codec-1.12.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../JAVA/commons-collections4-4.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../JAVA/AncestorFinder.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/fxgraph-0.0.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
