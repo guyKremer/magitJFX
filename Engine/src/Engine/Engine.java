@@ -86,7 +86,6 @@ public class Engine {
         }
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
-            System.out.println(path);
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
         }
     }
@@ -217,7 +216,8 @@ public class Engine {
     public Map<Path,Conflict> CheckConflicts(String  i_theirsBranchName)throws FileNotFoundException,IOException{
         Branch theirsBranch = m_currentRepository.GetBranches().get(i_theirsBranchName);
         if(theirsBranch!=null){
-           return  m_currentRepository.checkConflicts(theirsBranch);
+            System.out.println(m_currentRepository.checkConflicts(theirsBranch).keySet());
+            return  m_currentRepository.checkConflicts(theirsBranch);
         }
         else {
             throw new FileNotFoundException("The branch " + i_theirsBranchName + "doesnt exists");
