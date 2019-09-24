@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.shape.Circle?>
 
-<GridPane fx:id="m_BranchNameLabel" alignment="CENTER" hgap="5.0" maxHeight="91.0" maxWidth="1.7976931348623157E308" minHeight="44.0" minWidth="-Infinity" prefHeight="44.0" prefWidth="563.0" styleClass="single-commit-row-container" stylesheets="@../../../../../../../../Desktop/nodee/node/commitNode.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.center.CommitNodeController">
+<GridPane fx:id="m_BranchNameLabel" alignment="CENTER" hgap="5.0" maxHeight="91.0" maxWidth="1.7976931348623157E308" minHeight="44.0" minWidth="-Infinity" prefHeight="44.0" prefWidth="563.0" styleClass="single-commit-row-container" stylesheets="@./commitNode.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.center.CommitNodeController">
   <columnConstraints>
     <ColumnConstraints hgrow="NEVER" maxWidth="196.0" minWidth="-Infinity" prefWidth="92.0" />
       <ColumnConstraints hgrow="NEVER" maxWidth="150.0" minWidth="30.0" prefWidth="30.0" />

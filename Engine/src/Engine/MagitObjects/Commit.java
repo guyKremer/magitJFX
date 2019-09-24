@@ -42,6 +42,24 @@ public class Commit implements CommitRepresentative {
         unzipCommit(i_sha1);
     }
 
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) {
+            return true;
+        }
+
+        Commit c = (Commit) o;
+
+        // Compare the data members and return accordingly
+        return (this.m_sha1).equals(c.getSha1());
+    }
+
+    @Override
+    public int hashCode(){
+        return 1;
+    }
+
     public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,String i_SecondCommitSha1,
                   String i_dateOfCreation, String i_creator)
     {
@@ -100,22 +118,22 @@ public class Commit implements CommitRepresentative {
     }
 
     public void setSecondPrecedingSha1(String i_sha1){
-            if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
-                if(m_prevCommitSha1Array.isEmpty()){
-                    m_prevCommitSha1Array.add(1, null);
-                }
-                else{
-                    m_prevCommitSha1Array.set(1,null);
-                }
+        if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
+            if(m_prevCommitSha1Array.size()<2){
+                m_prevCommitSha1Array.add(1, null);
             }
             else{
-                if(m_prevCommitSha1Array.isEmpty()){
-                    m_prevCommitSha1Array.add(1, i_sha1);
-                }
-                else{
-                    m_prevCommitSha1Array.set(1,i_sha1);
-                }
+                m_prevCommitSha1Array.set(1,null);
             }
+        }
+        else{
+            if(m_prevCommitSha1Array.size()<2){
+                m_prevCommitSha1Array.add(1, i_sha1);
+            }
+            else{
+                m_prevCommitSha1Array.set(1,i_sha1);
+            }
+        }
     }
 
     public void setM_dateOfCreation(String i_date){

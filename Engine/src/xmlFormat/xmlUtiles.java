@@ -439,9 +439,10 @@ public class xmlUtiles {
                 parseFolder(folder,
                         m_mr.getLocation()),
                 i_firstCommitSha1,
+                i_secondCommitSha1,
                 i_msc.getDateOfCreation(),
                 i_msc.getAuthor());
-        commit.setSecondPrecedingSha1(i_secondCommitSha1);
+        //commit.setSecondPrecedingSha1(i_secondCommitSha1);
         commit.getRootFolder().saveInObjects();
 
         Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(commit.getSha1())

@@ -92,8 +92,9 @@ public class CenterController {
     private void addEdgesToCommit(Commit i_Commit, Model i_Model) throws IOException {
         if (!i_Commit.getFirstPrecedingSha1().isEmpty())
         {
-            final Edge edgeFirstPrev = new Edge(m_MapCommitToIcell
-                    .get(i_Commit), m_MapCommitToIcell.get(new Commit(i_Commit.getFirstPrecedingSha1())));
+            final Edge edgeFirstPrev = new Edge(
+                    m_MapCommitToIcell.get(i_Commit),
+                    m_MapCommitToIcell.get(new Commit(i_Commit.getFirstPrecedingSha1())));
             i_Model.addEdge(edgeFirstPrev);
         }
 
@@ -123,8 +124,6 @@ public class CenterController {
                         commitNode.SetBranchName(branchesString);
                     }
 
-
-                    // checkkkkk
                     m_TreeGraph.getGraphic(commitNode).setOnMouseClicked(event ->
                             onCommitNodeClicked(commit));
 
