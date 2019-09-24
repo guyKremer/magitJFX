@@ -8,6 +8,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
 import puk.team.course.magit.ancestor.finder.*;
+import Engine.Conflicts;
 
 
 import java.io.*;
@@ -18,9 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class Commit implements CommitRepresentative {
     private String m_sha1;
@@ -101,7 +100,7 @@ public class Commit implements CommitRepresentative {
 
     public void setSecondPrecedingSha1(String i_sha1){
             if(i_sha1 == null ||i_sha1.isEmpty()|| i_sha1.equals("null")){
-                if(m_prevCommitSha1Array.isEmpty()){
+                if(m_prevCommitSha1Array.size()<2){
                     m_prevCommitSha1Array.add(1, null);
                 }
                 else{
@@ -109,7 +108,7 @@ public class Commit implements CommitRepresentative {
                 }
             }
             else{
-                if(m_prevCommitSha1Array.isEmpty()){
+                if(m_prevCommitSha1Array.size()<2){
                     m_prevCommitSha1Array.add(1, i_sha1);
                 }
                 else{
@@ -220,4 +219,63 @@ public class Commit implements CommitRepresentative {
         return string.toString();
     }
 
+    public List<Conflicts> findConflicts(Commit ncaCommit, Commit theirsCommit) {
+        Map<Path, String> ncaPathToSha1Map = new HashMap<>();
+        Map<Path, String> theirsPathToSha1Map = new HashMap<>();
+        Map<Path, String> oursPathToSha1Map = new HashMap<>();
+        int conflictRep  = 0b00000000;
+
+        ncaCommit.getRootFolder().createPathToSha1Map(ncaPathToSha1Map);
+        theirsCommit.getRootFolder().createPathToSha1Map(theirsPathToSha1Map);
+        getRootFolder().createPathToSha1Map(oursPathToSha1Map);
+
+
+        for (Map.Entry<Path,String> entry : ncaPathToSha1Map.entrySet()){
+
+            conflictRep = calculateConflictRep(ncaPathToSha1Map.get(entry.getKey()),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            
+        }
+
+    }
+
+    private int calculateConflictRep(String sha1ToFind,Map<Path, String> ncaPathToSha1Map,Map<Path, String> oursPathToSha1Map, Map<Path, String> theirsPathToSha1Map) {
+        int conflictRep = 0b00000000;
+        String ncaCurrentFileSha1 = ncaPathToSha1Map.get(sha1ToFind);
+        String oursCurrentFileSha1 = oursPathToSha1Map.get(sha1ToFind);
+        String theirsCurrentFileSha1 = ncaPathToSha1Map.get(sha1ToFind);
+
+        // if exists in nca
+        if (ncaPathToSha1Map.containsKey(sha1ToFind)){
+            turnOnBit(1,conflictRep);
+        }
+        // if exists in ours
+        if (oursPathToSha1Map.containsKey(sha1ToFind)){
+            turnOnBit(2,conflictRep);
+        }
+        //if exists in theirs
+        if (theirsPathToSha1Map.containsKey(sha1ToFind)){
+            turnOnBit(3,conflictRep);
+        }
+        //nca vs ours
+        if( oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(ncaCurrentFileSha1)){
+            turnOnBit(3,conflictRep);
+        }
+        //nca vs theirs
+        if( theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(ncaCurrentFileSha1)){
+            turnOnBit(4,conflictRep);
+        }
+        //ours vs theirs
+        if(theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(oursCurrentFileSha1)){
+            turnOnBit(5,conflictRep);
+        }
+
+        return conflictRep;
+    }
+
+    private void turnOnBit(int index,int conflictByteRep) {
+        int mask = 0b10000000;
+
+        mask = mask>>index;
+        conflictByteRep = conflictByteRep | mask    ;
+    }
 }

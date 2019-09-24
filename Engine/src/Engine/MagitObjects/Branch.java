@@ -2,6 +2,7 @@ package Engine.MagitObjects;
 
 import Engine.Engine;
 import org.apache.commons.io.FileUtils;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -65,4 +66,6 @@ public class Branch {
         unZippedCommit.delete();
         return lines.get(2);
     }
+
+
 }

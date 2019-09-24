@@ -205,37 +205,13 @@ public class Engine {
     public void Merge(String i_theirs)throws FileNotFoundException,IOException{
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
         Commit nca;
-        //if exists
+        //if branch exists
         if(theirsBranch!= null){
-            nca =  getAncestor(theirsBranch);
-            checkConflicts(nca);
+            m_currentRepository.Merge(theirsBranch);
         }
         else{
-            
+            throw new FileNotFoundException(i_theirs + " doesn't exist");
         }
     }
 
-    private void checkConflicts(Commit nca) {
-
-    }
-
-    private Commit getAncestor(Branch i_theirsBranch)throws FileNotFoundException,IOException {
-        String oursSha1 = m_currentRepository.GeCurrentCommit().getSha1();
-        String theirsSha1 = i_theirsBranch.getCommitSha1();
-
-        AncestorFinder anf = new AncestorFinder(sha1->{
-           try{
-              return new Commit(sha1);
-           }
-           catch (IOException e ){
-                return null;
-           }
-        });
-        try{
-            return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
-        }
-        catch(MappingFunctionFailureException e){
-            return null;
-        }
-    }
 }

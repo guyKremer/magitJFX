@@ -4,12 +4,15 @@ import Engine.Engine;
 import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
+import Engine.Conflicts;
 import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
@@ -386,4 +389,43 @@ public class Repository {
         }
     }
 
+    public void Merge(Branch i_theirsBranch) throws FileNotFoundException,IOException{
+
+
+    }
+
+    public List<Conflicts> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+
+        String ncaSha1 = findAncestorSha1(i_theirsBranch,oursSha1,theirsSha1);
+        if(!ncaSha1.isEmpty()){
+            return findConflicts(ncaSha1,oursSha1,theirsSha1);
+        }
+        else{
+            throw new IOException("Something went wrong, please try again");
+        }
+
+    }
+
+    private List<Conflicts> findConflicts(String ncaSha1, String oursSha1, String theirsSha1)throws FileNotFoundException,IOException {
+        Commit ncaCommit = new Commit(ncaSha1);
+        Commit oursCommit = new Commit(oursSha1);
+        Commit theirsCommit = new Commit(theirsSha1);
+
+        oursCommit.findConflicts(ncaCommit,theirsCommit);
+
+    }
+
+    private String findAncestorSha1(Branch i_theirsBranch,String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {
+        AncestorFinder anf = new AncestorFinder(sha1->{
+            try{
+                return new Commit(sha1);
+            }
+            catch (IOException e ){
+                return null;
+            }
+        });
+        return anf.traceAncestor(i_ourSha1,i_theirsSha1);
+    }
 }
