@@ -16,7 +16,8 @@ public class MergeTask extends Task<Boolean> {
 
     @Override
     protected Boolean call() throws Exception {
-        engine.Merge(this.theirsBranchName);
+        engine.CheckConflicts(this.theirsBranchName);
+        //engine.Merge(this.theirsBranchName);
         return Boolean.TRUE;
     }
 }

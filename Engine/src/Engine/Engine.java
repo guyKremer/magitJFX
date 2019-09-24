@@ -214,4 +214,14 @@ public class Engine {
         }
     }
 
+    public Map<Path,Conflict> CheckConflicts(String  i_theirsBranchName)throws FileNotFoundException,IOException{
+        Branch theirsBranch = m_currentRepository.GetBranches().get(i_theirsBranchName);
+        if(theirsBranch!=null){
+           return  m_currentRepository.checkConflicts(theirsBranch);
+        }
+        else {
+            throw new FileNotFoundException("The branch " + i_theirsBranchName + "doesnt exists");
+        }
+    }
+
 }

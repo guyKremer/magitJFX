@@ -1,24 +1,16 @@
 package Engine.MagitObjects;
 
 import Engine.Engine;
+import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
-import Engine.MagitObjects.FolderItems.FolderItem;
-import com.sun.xml.internal.ws.server.ServerRtException;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import Engine.Status;
 import puk.team.course.magit.ancestor.finder.*;
-import Engine.Conflicts;
+import Engine.Conflict;
 
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Commit implements CommitRepresentative {
@@ -219,11 +211,12 @@ public class Commit implements CommitRepresentative {
         return string.toString();
     }
 
-    public List<Conflicts> findConflicts(Commit ncaCommit, Commit theirsCommit) {
+    public Map <Path,Conflict> findConflicts(Set<Integer> conflictsSet, Commit ncaCommit, Commit theirsCommit) {
         Map<Path, String> ncaPathToSha1Map = new HashMap<>();
         Map<Path, String> theirsPathToSha1Map = new HashMap<>();
         Map<Path, String> oursPathToSha1Map = new HashMap<>();
-        int conflictRep  = 0b00000000;
+        Map <Path,Conflict> res = new HashMap<>();
+       int conflictRep  = 0b00000000;
 
         ncaCommit.getRootFolder().createPathToSha1Map(ncaPathToSha1Map);
         theirsCommit.getRootFolder().createPathToSha1Map(theirsPathToSha1Map);
@@ -231,18 +224,51 @@ public class Commit implements CommitRepresentative {
 
 
         for (Map.Entry<Path,String> entry : ncaPathToSha1Map.entrySet()){
-
             conflictRep = calculateConflictRep(ncaPathToSha1Map.get(entry.getKey()),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
-            
+            if(conflictsSet.contains(conflictRep)){
+                System.out.println(conflictRep);
+                Blob blob = (Blob)ncaCommit.getRootFolder().GetItem(entry.getValue());
+                Conflict conflictToInsert = new Conflict(entry.getKey(),blob.GetContent(),null,null);
+                res.put(entry.getKey(),conflictToInsert);
+            }
+        }
+        for (Map.Entry<Path,String> entry : oursPathToSha1Map.entrySet()){
+            conflictRep = calculateConflictRep(oursPathToSha1Map.get(entry.getKey()),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            if(conflictsSet.contains(conflictRep)){
+                System.out.println(conflictRep);
+                Blob blob = (Blob) m_rootFolder.GetItem(entry.getValue());
+                if(res.containsKey(entry.getKey())){
+                    res.get(entry.getKey()).setOursContent(blob.GetContent());
+                }
+                else{
+                    Conflict conflictToInsert = new Conflict(entry.getKey(),null,blob.GetContent(),null);
+                    res.put(entry.getKey(),conflictToInsert);
+                }
+            }
+        }
+        for (Map.Entry<Path,String> entry : theirsPathToSha1Map.entrySet()){
+            conflictRep = calculateConflictRep(theirsPathToSha1Map.get(entry.getKey()),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            if(conflictsSet.contains(conflictRep)){
+                System.out.println(conflictRep);
+                Blob blob = (Blob)theirsCommit.getRootFolder().GetItem(entry.getValue());
+                if(res.containsKey(entry.getKey())){
+                    res.get(entry.getKey()).setTheirsContent(blob.GetContent());
+                }
+                else{
+                    Conflict conflictToInsert = new Conflict(entry.getKey(),null,null,blob.GetContent());
+                    res.put(entry.getKey(),conflictToInsert);
+                }
+            }
         }
 
+        return res;
     }
 
     private int calculateConflictRep(String sha1ToFind,Map<Path, String> ncaPathToSha1Map,Map<Path, String> oursPathToSha1Map, Map<Path, String> theirsPathToSha1Map) {
         int conflictRep = 0b00000000;
         String ncaCurrentFileSha1 = ncaPathToSha1Map.get(sha1ToFind);
         String oursCurrentFileSha1 = oursPathToSha1Map.get(sha1ToFind);
-        String theirsCurrentFileSha1 = ncaPathToSha1Map.get(sha1ToFind);
+        String theirsCurrentFileSha1 = theirsPathToSha1Map.get(sha1ToFind);
 
         // if exists in nca
         if (ncaPathToSha1Map.containsKey(sha1ToFind)){
@@ -257,15 +283,18 @@ public class Commit implements CommitRepresentative {
             turnOnBit(3,conflictRep);
         }
         //nca vs ours
-        if( oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(ncaCurrentFileSha1)){
+        if( oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(ncaCurrentFileSha1)
+                ||  ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(oursCurrentFileSha1)){
             turnOnBit(3,conflictRep);
         }
         //nca vs theirs
-        if( theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(ncaCurrentFileSha1)){
+        if( theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(ncaCurrentFileSha1)
+            ||ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(theirsCurrentFileSha1)){
             turnOnBit(4,conflictRep);
         }
         //ours vs theirs
-        if(theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(oursCurrentFileSha1)){
+        if(theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(oursCurrentFileSha1)
+            || oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(theirsCurrentFileSha1) ){
             turnOnBit(5,conflictRep);
         }
 

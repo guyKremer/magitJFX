@@ -1,24 +1,19 @@
 package Engine.MagitObjects;
 
 import Engine.Engine;
-import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
-import Engine.Conflicts;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import Engine.Conflict;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class Repository {
     private String m_name;
@@ -29,6 +24,7 @@ public class Repository {
     private Branch m_headBranch;
     private Commit m_currentCommit=null;
     private Folder m_WC;
+    private Set<Integer> m_conflictsSet;
 
     // getters
 
@@ -84,12 +80,31 @@ public class Repository {
         m_branches = new HashMap<String, Branch>();
         m_pathToMagitDirectory = m_repositoryPath.resolve(".magit");
         m_WC = new Folder(m_repositoryPath);
+        m_conflictsSet = createConflictsSet();
+
         if(!i_exists){
             initializeRepository();
         }
         else{
             switchRepository();
         }
+    }
+
+    private Set<Integer> createConflictsSet() {
+        Set <Integer> res = new HashSet<>();
+
+        res.add(0b001011);
+        res.add(0b010101);
+        res.add(0b011110);
+        res.add(0b011111);
+        res.add(0b100110);
+        res.add(0b100111);
+        res.add(0b101111);
+        res.add(0b110111);
+        res.add(0b111110);
+        res.add(0b111111);
+
+        return res;
     }
 
     public void InsertBranch(Branch i_branch){
@@ -391,30 +406,22 @@ public class Repository {
 
     public void Merge(Branch i_theirsBranch) throws FileNotFoundException,IOException{
 
-
     }
 
-    public List<Conflicts> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
+    public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
         String oursSha1 = m_currentCommit.getSha1();
         String theirsSha1 = i_theirsBranch.getCommitSha1();
-
         String ncaSha1 = findAncestorSha1(i_theirsBranch,oursSha1,theirsSha1);
+
         if(!ncaSha1.isEmpty()){
-            return findConflicts(ncaSha1,oursSha1,theirsSha1);
+            Commit ncaCommit = new Commit(ncaSha1);
+            Commit oursCommit = new Commit(oursSha1);
+            Commit theirsCommit = new Commit(theirsSha1);
+            return oursCommit.findConflicts(m_conflictsSet,ncaCommit,theirsCommit);
         }
         else{
             throw new IOException("Something went wrong, please try again");
         }
-
-    }
-
-    private List<Conflicts> findConflicts(String ncaSha1, String oursSha1, String theirsSha1)throws FileNotFoundException,IOException {
-        Commit ncaCommit = new Commit(ncaSha1);
-        Commit oursCommit = new Commit(oursSha1);
-        Commit theirsCommit = new Commit(theirsSha1);
-
-        oursCommit.findConflicts(ncaCommit,theirsCommit);
-
     }
 
     private String findAncestorSha1(Branch i_theirsBranch,String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {

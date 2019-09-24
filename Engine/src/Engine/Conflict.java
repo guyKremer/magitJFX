@@ -2,13 +2,13 @@ package Engine;
 
 import java.nio.file.Path;
 
-public class Conflicts {
+public class Conflict {
     private Path filePath;
     private String oursContent;
     private String theirsContent;
     private String parentContent;
 
-    public Conflicts(Path filePath,String parentContent, String oursContent, String theirsContent) {
+    public Conflict(Path filePath, String parentContent, String oursContent, String theirsContent) {
         this.filePath = filePath;
         this.parentContent=parentContent;
         this.oursContent=oursContent;
@@ -29,5 +29,21 @@ public class Conflicts {
 
     public String getTheirsContent() {
         return theirsContent;
+    }
+
+    public void setFilePath(Path filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setOursContent(String oursContent) {
+        this.oursContent = oursContent;
+    }
+
+    public void setParentContent(String parentContent) {
+        this.parentContent = parentContent;
+    }
+
+    public void setTheirsContent(String theirsContent) {
+        this.theirsContent = theirsContent;
     }
 }

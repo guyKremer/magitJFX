@@ -216,4 +216,20 @@ public class Folder extends FolderItem{
     }
 
 
+    public FolderItem GetItem(String sha1) {
+        FolderItem res=null;
+        for (FolderItem item : m_items) {
+            if(sha1.equals(item.m_sha1)){
+                res = item;
+                break;
+            }
+            else if (item.m_type.equals("folder")) {
+                res = ((Folder) item).GetItem(sha1);
+                if(res != null){
+                    break;
+                }
+            }
+        }
+        return res;
+    }
 }
