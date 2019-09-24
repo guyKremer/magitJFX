@@ -56,8 +56,9 @@ public class AppController {
         centerComponentController.changeUserName(name);
     }
 
-    public void loadFromXml(File file){
+    public void loadFromXml(File file) throws InterruptedException, IOException {
         centerComponentController.loadFromXml(file);
+        centerComponentController.ResetCommitsTree();
     }
 
     public void createNewRepo(String path, String repoName){

@@ -65,7 +65,7 @@ public class HeaderController {
     }
 
     @FXML
-    public void loadRepositoryFromXmlActionListener(ActionEvent actionEvent){
+    public void loadRepositoryFromXmlActionListener(ActionEvent actionEvent) throws InterruptedException, IOException {
         File file;
         file = showFileChooserDialog();
         if(file != null){

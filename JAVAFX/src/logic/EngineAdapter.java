@@ -27,9 +27,11 @@ public class EngineAdapter {
         new Thread(currentRunningTask).start();
     }
 
-    public void LoadFromXml(File file, BiConsumer<String,String> repDetailsDelegate){
+    public void LoadFromXml(File file, BiConsumer<String,String> repDetailsDelegate) throws InterruptedException {
         currentRunningTask = new LoadFromXmlTask(engine, file.getPath(), repDetailsDelegate);
-        new Thread(currentRunningTask).start();
+        Thread t = new Thread(currentRunningTask);
+        t.start();
+        t.join();
     }
 
     public void CreateNewRepo(String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
@@ -42,7 +44,7 @@ public class EngineAdapter {
     }
     public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate) throws InterruptedException {
         currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate);
-        Thread  t = new Thread(currentRunningTask);//.start();
+        Thread t = new Thread(currentRunningTask);//.start();
         t.start();
         t.join();
     }

@@ -180,7 +180,7 @@ public class CenterController {
         mainController.getEngineAdapter().ChangeUserName(name, userName.textProperty()::set);
     }
 
-    public void loadFromXml(File file) {
+    public void loadFromXml(File file) throws InterruptedException {
         BiConsumer<String,String> biConsumer = (a,b)->{
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);
