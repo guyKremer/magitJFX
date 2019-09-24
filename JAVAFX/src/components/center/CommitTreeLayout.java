@@ -89,7 +89,7 @@ public class CommitTreeLayout implements Layout {
         List<Commit> temp = mf_MapCommitToIcell
                 .keySet()
                 .stream()
-                .sorted(Comparator.comparing(Commit::getDateOfCreation))
+                .sorted(Comparator.comparing(Commit::GetDate))
                 .collect(Collectors.toList());
 
         Collections.reverse(temp);

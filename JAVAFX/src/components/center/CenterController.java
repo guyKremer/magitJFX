@@ -16,9 +16,8 @@ import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -132,6 +131,7 @@ public class CenterController {
 
                     m_MapCommitToIcell.put(commit, commitNode);
                 });
+
     }
 
     private void onCommitNodeClicked(Commit i_commit){

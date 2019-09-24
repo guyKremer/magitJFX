@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +37,19 @@ public class Commit implements CommitRepresentative {
         m_prevCommitSha1Array=null;
         m_dateOfCreation=null;
         m_creator=null;
+    }
+
+    public Date GetDate(){
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy-hh:mm:ss:SSS");
+        Date date = null ;
+        try {
+            date = format.parse(m_dateOfCreation);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        return date;
     }
 
     public Commit(String i_sha1) throws FileNotFoundException,IOException {
