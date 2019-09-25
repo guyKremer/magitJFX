@@ -216,7 +216,6 @@ public class Engine {
     public Map<Path,Conflict> CheckConflicts(String  i_theirsBranchName)throws FileNotFoundException,IOException{
         Branch theirsBranch = m_currentRepository.GetBranches().get(i_theirsBranchName);
         if(theirsBranch!=null){
-            System.out.println(m_currentRepository.checkConflicts(theirsBranch).keySet());
             return  m_currentRepository.checkConflicts(theirsBranch);
         }
         else {

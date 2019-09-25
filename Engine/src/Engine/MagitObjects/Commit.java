@@ -162,6 +162,9 @@ public class Commit implements CommitRepresentative {
     public void flush(){
         m_rootFolder.flushToWc();
     }
+    public void flushForMerge(Commit ancestor, Commit ours){
+        m_rootFolder.flushForMergeToWc(ancestor,ours);
+    }
     public void Commit(Folder i_WC,String i_message,String i_dateOfCreation,String i_user,String i_firstPrevCommitSha1 ,String i_secondPrevCommitSha1){
         // Check If Sha1 Exists
         m_rootFolder = i_WC;

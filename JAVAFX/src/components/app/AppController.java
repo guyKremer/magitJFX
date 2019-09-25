@@ -110,6 +110,7 @@ public class AppController {
                 dialog.close();
             }
             catch (IOException e){
+                dialog.close();
                 System.out.println(e.getMessage());
             }
         });

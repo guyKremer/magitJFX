@@ -1,6 +1,7 @@
 package Engine.MagitObjects.FolderItems;
 
 import Engine.Engine;
+import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.Repository;
 import org.apache.commons.codec.digest.DigestUtils;
 import Engine.Status;
@@ -83,12 +84,38 @@ public class Blob extends FolderItem {
                 blob = m_path.toFile();
             }
             FileUtils.writeStringToFile(blob,m_content, Charset.forName("utf-8"),false);
-            /*
-            BufferedWriter writer = new BufferedWriter(new FileWriter(blob));
-            writer.write(m_content);
-            writer.close();
+        }
+        catch(java.io.IOException e){
 
-             */
+        }
+    }
+
+    @Override
+    public void flushForMergeToWc(Commit ancestor, Commit ours){
+        String content;
+        try{
+            File blob;
+            if(!Files.exists(m_path)){
+                blob = Files.createFile(m_path).toFile();
+                content = m_content;
+            }
+            else{
+                Blob ancestorFile = (Blob)ancestor.getRootFolder().GetItem(m_path);
+                Blob oursFile = (Blob)ours.getRootFolder().GetItem(m_path);
+                if(ancestorFile!=null){
+                    if(oursFile.m_sha1.equals(ancestorFile.m_sha1)){
+                        content = m_content;
+                    }
+                    else{
+                        content = oursFile.m_content;
+                    }
+                }
+                else {
+                    content = oursFile.m_content;
+                }
+                blob = m_path.toFile();
+            }
+            FileUtils.writeStringToFile(blob,content, Charset.forName("utf-8"),false);
         }
         catch(java.io.IOException e){
 
@@ -101,5 +128,6 @@ public class Blob extends FolderItem {
         str.append(m_path + ",").append(toString());
         i_str.add(str.toString());
     }
+
 }
 

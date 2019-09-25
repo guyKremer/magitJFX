@@ -423,26 +423,30 @@ public class Repository {
         }
     }
 
-    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileAlreadyExistsException,FileNotFoundException,IOException{
-
+    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
         Map<Path,Conflict> conflicts = new HashMap<>();
         if(checkConflicts){
-            new Commit(i_theirsBranch.getCommitSha1()).flush();
+            new Commit(i_theirsBranch.getCommitSha1()).flushForMerge(new Commit(findAncestorSha1(m_currentCommit.getSha1(),i_theirsBranch.getCommitSha1())),m_currentCommit);
             conflicts =  checkConflicts (i_theirsBranch);
-            System.out.println(conflicts.keySet());
             if(conflicts.isEmpty()){
                 try {
                     createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
                     m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
                 }
                 catch(FileAlreadyExistsException e){
-                    throw new FileAlreadyExistsException("Nothing to merge commits are identical");
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
                 }
             }
         }
         else{
-            createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
-            m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            try{
+                createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+            catch(FileAlreadyExistsException e){
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+
         }
         return conflicts;
     }
@@ -450,7 +454,7 @@ public class Repository {
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
         String oursSha1 = m_currentCommit.getSha1();
         String theirsSha1 = i_theirsBranch.getCommitSha1();
-        String ncaSha1 = findAncestorSha1(i_theirsBranch,oursSha1,theirsSha1);
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
 
         if(!ncaSha1.isEmpty()){
             Commit ncaCommit = new Commit(ncaSha1);
@@ -463,7 +467,7 @@ public class Repository {
         }
     }
 
-    private String findAncestorSha1(Branch i_theirsBranch,String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {
+    private String findAncestorSha1(String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {
         AncestorFinder anf = new AncestorFinder(sha1->{
             try{
                 return new Commit(sha1);
