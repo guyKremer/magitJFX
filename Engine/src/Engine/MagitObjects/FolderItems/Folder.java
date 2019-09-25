@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import Engine.Status;
+import org.apache.commons.io.FileUtils;
 
 
 public class Folder extends FolderItem{
@@ -128,7 +129,9 @@ public class Folder extends FolderItem{
     public void flushToWc(){
         try{
             for (FolderItem item: m_items){
-                Files.createDirectories(m_path);
+                if(!Files.exists(m_path)){
+                    Files.createDirectories(m_path);
+                }
                 item.flushToWc();
             }
         }

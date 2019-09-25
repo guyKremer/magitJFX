@@ -113,10 +113,12 @@ public class EngineAdapter {
         return res;
     }
 
-    public void Merge (String theirsBranchName,Consumer<Commit> commitConsumer)throws FileAlreadyExistsException , IOException {
-        System.out.println("inn");
-        engine.Merge(theirsBranchName);
-        commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+    public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException {
+        Map<Path,Conflict> conflicts = engine.Merge(theirsBranchName,checkConflicts);
+        if(conflicts.isEmpty()){
+            commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+        }
+        return conflicts;
     }
     public Map<Path,Conflict> CheckConflicts(String branchName)throws FileNotFoundException,IOException {
         return engine.CheckConflicts(branchName);

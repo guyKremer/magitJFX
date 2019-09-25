@@ -4,10 +4,13 @@ import Engine.Engine;
 import Engine.MagitObjects.Repository;
 import org.apache.commons.codec.digest.DigestUtils;
 import Engine.Status;
+import org.apache.commons.io.FileUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -72,10 +75,20 @@ public class Blob extends FolderItem {
     @Override
     public void flushToWc(){
         try{
-            File blob = Files.createFile(m_path).toFile();
+            File blob;
+            if(!Files.exists(m_path)){
+                 blob = Files.createFile(m_path).toFile();
+            }
+            else{
+                blob = m_path.toFile();
+            }
+            FileUtils.writeStringToFile(blob,m_content, Charset.forName("utf-8"),false);
+            /*
             BufferedWriter writer = new BufferedWriter(new FileWriter(blob));
             writer.write(m_content);
             writer.close();
+
+             */
         }
         catch(java.io.IOException e){
 

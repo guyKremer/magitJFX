@@ -106,16 +106,14 @@ public class AppController {
         mergeButton.setDisable(true);
         mergeButton.setOnAction((event) -> {
             try{
-                engineAdapter.Merge(branchName,commitConsumer);
+                engineAdapter.Merge(branchName,commitConsumer,false);
                 dialog.close();
             }
             catch (IOException e){
-
+                System.out.println(e.getMessage());
             }
         });
-
-
-        conflicts = engineAdapter.CheckConflicts(branchName);
+        conflicts = engineAdapter.Merge(branchName,commitConsumer,true);
         Consumer<Conflict> conflictConsumer = conflict -> {
             Hyperlink linkToRemove;
             conflicts.remove(conflict.getFilePath());
@@ -133,15 +131,6 @@ public class AppController {
                 linksOnStage.put(entry.getKey(),currentLink);
             }
 
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initOwner(primaryStage);
-            conflictFiles.getChildren().add(mergeButton);
-            Scene dialogScene = new Scene(conflictFiles, 300, 200);
-            dialog.setScene(dialogScene);
-            dialog.show();
-        }
-        else{
-            mergeButton.setDisable(false);
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(primaryStage);
             conflictFiles.getChildren().add(mergeButton);

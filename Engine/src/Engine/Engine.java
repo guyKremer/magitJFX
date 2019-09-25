@@ -201,12 +201,12 @@ public class Engine {
         m_currentRepository.AddBranch(i_branchName,i_checkout);
     }
 
-    public void Merge(String i_theirs)throws FileNotFoundException,IOException{
+    public Map<Path,Conflict> Merge(String i_theirs,boolean checkConflicts)throws FileNotFoundException,IOException{
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
 
         //if branch exists
         if(theirsBranch!= null){
-            m_currentRepository.Merge(theirsBranch);
+            return  m_currentRepository.Merge(theirsBranch,checkConflicts);
         }
         else{
             throw new FileNotFoundException(i_theirs + " doesn't exist");

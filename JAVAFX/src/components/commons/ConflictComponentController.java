@@ -61,7 +61,12 @@ public class ConflictComponentController {
             FileUtils.deleteQuietly(this.conflict.getFilePath().toFile());
         }
         else if(!result.getText().isEmpty()){
-            FileUtils.writeStringToFile(this.conflict.getFilePath().toFile(), result.getText(), Charset.forName("utf-8"),false);
+            try{
+                FileUtils.writeStringToFile(this.conflict.getFilePath().toFile(), result.getText(), Charset.forName("utf-8"),false);
+            }
+            catch (IOException e ){
+                System.out.println("cant write");
+            }
         }
 
         this.conflictConsumer.accept(this.conflict);

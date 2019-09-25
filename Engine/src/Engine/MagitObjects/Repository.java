@@ -423,9 +423,22 @@ public class Repository {
         }
     }
 
-    public void Merge(Branch i_theirsBranch) throws FileNotFoundException,IOException{
-        createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
-        m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());;
+    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
+
+        Map<Path,Conflict> conflicts = new HashMap<>();
+        if(checkConflicts){
+            new Commit(i_theirsBranch.getCommitSha1()).flush();
+            conflicts =  checkConflicts (i_theirsBranch);
+            if(conflicts.isEmpty()){
+                createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+        }
+        else{
+            createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+            m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+        }
+        return conflicts;
     }
 
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
