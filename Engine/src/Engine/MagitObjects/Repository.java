@@ -423,15 +423,21 @@ public class Repository {
         }
     }
 
-    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
+    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileAlreadyExistsException,FileNotFoundException,IOException{
 
         Map<Path,Conflict> conflicts = new HashMap<>();
         if(checkConflicts){
             new Commit(i_theirsBranch.getCommitSha1()).flush();
             conflicts =  checkConflicts (i_theirsBranch);
+            System.out.println(conflicts.keySet());
             if(conflicts.isEmpty()){
-                createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
-                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                try {
+                    createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                }
+                catch(FileAlreadyExistsException e){
+                    throw new FileAlreadyExistsException("Nothing to merge commits are identical");
+                }
             }
         }
         else{
