@@ -28,6 +28,16 @@ public class Branch {
         flushBranch();
     }
 
+    public Branch(Path i_pathToBranch, String i_name, String i_commitSha1) throws IOException {
+        m_pathToBranch = i_pathToBranch;
+        m_name = i_name;
+        m_commitSha1 = i_commitSha1;
+        if(m_commitSha1.equals("null")){
+            m_commitSha1=null;
+        }
+        flushBranch();
+    }
+
     public Path getPathToBranch(){
         return m_pathToBranch;
     }
