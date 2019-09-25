@@ -8,8 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="517.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.commons.ConflictComponentController">
    <children>
       <HBox layoutX="10.0" layoutY="210.0" prefHeight="172.0" prefWidth="1000.0" VBox.vgrow="ALWAYS">
          <children>
@@ -18,7 +17,7 @@
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="332.0" text="Ancestor" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
                   <TextFlow prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <TextArea maxHeight="-Infinity" prefHeight="187.0" prefWidth="352.0" />
+                        <TextArea fx:id="ancestor" maxHeight="-Infinity" prefHeight="187.0" prefWidth="352.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -28,7 +27,7 @@
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="296.0" text="Ours" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
                   <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="187.0" prefWidth="296.0">
                      <children>
-                        <TextArea prefHeight="187.0" prefWidth="352.0" />
+                        <TextArea fx:id="ours" prefHeight="187.0" prefWidth="137.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -38,7 +37,7 @@
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="297.0" text="Theirs" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
                   <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="195.0" prefWidth="332.0">
                      <children>
-                        <TextArea maxHeight="-Infinity" prefHeight="187.0" prefWidth="337.0" />
+                        <TextArea fx:id="theirs" maxHeight="-Infinity" prefHeight="187.0" prefWidth="191.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -50,7 +49,7 @@
             <Label alignment="CENTER" prefHeight="17.0" prefWidth="1000.0" text="Result" VBox.vgrow="ALWAYS" />
             <TextFlow prefHeight="167.0" prefWidth="206.0">
                <children>
-                  <TextArea prefHeight="187.0" prefWidth="1000.0" />
+                  <TextArea prefHeight="187.0" prefWidth="517.0" />
                </children>
             </TextFlow>
          </children>

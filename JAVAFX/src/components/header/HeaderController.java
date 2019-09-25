@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -147,7 +148,7 @@ public class HeaderController {
         mainController.Commit(message);
     }
     @FXML
-    public void mergeActionListener(ActionEvent actionEvent){
+    public void mergeActionListener(ActionEvent actionEvent)throws FileNotFoundException,IOException,Exception{
         mainController.Merge();
     }
 
