@@ -203,7 +203,7 @@ public class Engine {
 
     public void Merge(String i_theirs)throws FileNotFoundException,IOException{
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
-        Commit nca;
+
         //if branch exists
         if(theirsBranch!= null){
             m_currentRepository.Merge(theirsBranch);

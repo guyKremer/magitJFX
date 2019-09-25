@@ -10,6 +10,7 @@ import logic.tasks.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -112,6 +113,11 @@ public class EngineAdapter {
         return res;
     }
 
+    public void Merge (String theirsBranchName,Consumer<Commit> commitConsumer)throws FileAlreadyExistsException , IOException {
+        System.out.println("inn");
+        engine.Merge(theirsBranchName);
+        commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+    }
     public Map<Path,Conflict> CheckConflicts(String branchName)throws FileNotFoundException,IOException {
         return engine.CheckConflicts(branchName);
         /*

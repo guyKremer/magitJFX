@@ -112,8 +112,6 @@ public class Repository {
     private Set<Integer> createConflictsSet() {
         Set <Integer> res = new HashSet<>();
 
-        res.add(0b001011);
-        res.add(0b010101);
         res.add(0b011110);
         res.add(0b011111);
         res.add(0b100110);
@@ -426,7 +424,8 @@ public class Repository {
     }
 
     public void Merge(Branch i_theirsBranch) throws FileNotFoundException,IOException{
-
+        createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+        m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());;
     }
 
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{

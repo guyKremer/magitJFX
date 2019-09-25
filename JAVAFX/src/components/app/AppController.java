@@ -1,6 +1,7 @@
 package components.app;
 
 import Engine.Engine;
+import Engine.MagitObjects.Commit;
 import components.center.CenterController;
 import components.commons.ConflictComponentController;
 import components.header.HeaderController;
@@ -10,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.BorderPane;
@@ -28,8 +30,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -83,34 +87,78 @@ public class AppController {
         centerComponentController.createNewRepo(path, repoName);
     }
 
-    public void Merge()throws FileNotFoundException,IOException ,Exception{
+    public void Merge()throws FileNotFoundException,IOException,Exception{
         Map<Path,Conflict> conflicts;
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
+        Button mergeButton = new Button("Merge");
+        final Stage dialog = new Stage();
+        Map<Path,Hyperlink> linksOnStage = new HashMap<>();
+        VBox conflictFiles= new VBox();
+        Consumer<Commit> commitConsumer = commit -> {
+            centerComponentController.getAuthorText().textProperty().set(commit.getCreator());
+            centerComponentController.getDateText().textProperty().set(commit.getDateOfCreation());
+            centerComponentController.getCommitSha1Text().textProperty().set(commit.getSha1());
+            centerComponentController.getParent1Sha1Text().textProperty().set(commit.getFirstPrecedingSha1());
+            centerComponentController.getParent2Sha1Text().textProperty().set(commit.getSecondPrecedingSha1());
+            centerComponentController.getCommitMsg().textProperty().set(commit.getMessage());
+        };
+        mergeButton.setId("mergeButton");
+        mergeButton.setDisable(true);
+        mergeButton.setOnAction((event) -> {
+            try{
+                engineAdapter.Merge(branchName,commitConsumer);
+                dialog.close();
+            }
+            catch (IOException e){
+
+            }
+        });
+
+
         conflicts = engineAdapter.CheckConflicts(branchName);
+        Consumer<Conflict> conflictConsumer = conflict -> {
+            Hyperlink linkToRemove;
+            conflicts.remove(conflict.getFilePath());
+            linkToRemove = linksOnStage.get(conflict.getFilePath());
+            conflictFiles.getChildren().remove(linkToRemove);
+            if(conflicts.isEmpty()){
+                mergeButton.setDisable(false);
+            }
+        };
+
         if(!conflicts.isEmpty()){
-            VBox conflictFiles= new VBox();
             for (Map.Entry<Path,Conflict> entry : conflicts.entrySet()){
-                conflictFiles.getChildren().add(createHyperLink(entry.getValue()));
+                Hyperlink currentLink = createHyperLink(entry.getValue(),conflictConsumer);
+                conflictFiles.getChildren().add(currentLink);
+                linksOnStage.put(entry.getKey(),currentLink);
             }
 
-            final Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.initOwner(primaryStage);
+            conflictFiles.getChildren().add(mergeButton);
             Scene dialogScene = new Scene(conflictFiles, 300, 200);
             dialog.setScene(dialogScene);
             dialog.show();
-
+        }
+        else{
+            mergeButton.setDisable(false);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(primaryStage);
+            conflictFiles.getChildren().add(mergeButton);
+            Scene dialogScene = new Scene(conflictFiles, 300, 200);
+            dialog.setScene(dialogScene);
+            dialog.show();
         }
     }
 
-    private Hyperlink createHyperLink(Conflict i_conflict) {
+    private Hyperlink createHyperLink(Conflict i_conflict,Consumer<Conflict> conflictConsumer) {
         Hyperlink link = new Hyperlink();
         link.setText(i_conflict.getFilePath().toString());
         link.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent e)  {
                 try{
-                    displayConflictsComponent(i_conflict);
+                    displayConflictsComponent(i_conflict,conflictConsumer);
                 }
                 catch (Exception ex){
 
@@ -120,7 +168,7 @@ public class AppController {
         return link;
     }
 
-    private void displayConflictsComponent(Conflict i_conflict) throws Exception{
+    private void displayConflictsComponent(Conflict i_conflict,Consumer<Conflict> conflictConsumer) throws Exception{
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = getClass().getResource("/components/commons/ConflictComponent.fxml");
         fxmlLoader.setLocation(url);
@@ -129,10 +177,12 @@ public class AppController {
         final Stage dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);
         dialog.initOwner(primaryStage);
-        Scene dialogScene = new Scene(root, 300, 200);
+        Scene dialogScene = new Scene(root, 700, 500);
         dialog.setScene(dialogScene);
         dialog.setOnShown(event ->{
           controller.setConflict(i_conflict);
+          controller.setStage(dialog);
+          controller.setConflictConsumer(conflictConsumer);
         });
         dialog.showAndWait();
     }
@@ -166,5 +216,4 @@ public class AppController {
     public void Commit(String message){
         centerComponentController.Commit(message);
     }
-
 }
