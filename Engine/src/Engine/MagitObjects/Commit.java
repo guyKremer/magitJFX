@@ -1,21 +1,17 @@
 package Engine.MagitObjects;
 
 import Engine.Engine;
+import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
-import Engine.MagitObjects.FolderItems.FolderItem;
-import com.sun.xml.internal.ws.server.ServerRtException;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FileUtils;
-import Engine.Status;
 import puk.team.course.magit.ancestor.finder.*;
+import Engine.Conflict;
 
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.*;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -166,6 +162,9 @@ public class Commit implements CommitRepresentative {
     public void flush(){
         m_rootFolder.flushToWc();
     }
+    public void flushForMerge(Commit ancestor, Commit ours){
+        m_rootFolder.flushForMergeToWc(ancestor,ours);
+    }
     public void Commit(Folder i_WC,String i_message,String i_dateOfCreation,String i_user,String i_firstPrevCommitSha1 ,String i_secondPrevCommitSha1){
         // Check If Sha1 Exists
         m_rootFolder = i_WC;
@@ -252,4 +251,105 @@ public class Commit implements CommitRepresentative {
         return string.toString();
     }
 
+    public Map <Path,Conflict> findConflicts(Set<Integer> conflictsSet, Commit ncaCommit, Commit theirsCommit) {
+        Map<Path, String> ncaPathToSha1Map = new HashMap<>();
+        Map<Path, String> theirsPathToSha1Map = new HashMap<>();
+        Map<Path, String> oursPathToSha1Map = new HashMap<>();
+        Map <Path,Conflict> res = new HashMap<>();
+        Integer conflictRep  = 0b00000000;
+
+        ncaCommit.getRootFolder().createPathToSha1Map(ncaPathToSha1Map);
+        theirsCommit.getRootFolder().createPathToSha1Map(theirsPathToSha1Map);
+        getRootFolder().createPathToSha1Map(oursPathToSha1Map);
+
+
+        for (Map.Entry<Path,String> entry : ncaPathToSha1Map.entrySet()){
+            if(entry.getKey().equals(m_rootFolder.getPath())){
+                continue;
+            }
+            conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            if(conflictsSet.contains(conflictRep)){
+                Blob blob = (Blob)ncaCommit.getRootFolder().GetItem(entry.getValue());
+                Conflict conflictToInsert = new Conflict(entry.getKey(),blob.GetContent(),null,null);
+                res.put(entry.getKey(),conflictToInsert);
+            }
+        }
+        for (Map.Entry<Path,String> entry : oursPathToSha1Map.entrySet()){
+            if(entry.getKey().equals(m_rootFolder.getPath())){
+                continue;
+            }
+            conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            if(conflictsSet.contains(conflictRep)){
+                Blob blob = (Blob) m_rootFolder.GetItem(entry.getValue());
+                if(res.containsKey(entry.getKey())){
+                    res.get(entry.getKey()).setOursContent(blob.GetContent());
+                }
+                else{
+                    Conflict conflictToInsert = new Conflict(entry.getKey(),null,blob.GetContent(),null);
+                    res.put(entry.getKey(),conflictToInsert);
+                }
+            }
+        }
+        for (Map.Entry<Path,String> entry : theirsPathToSha1Map.entrySet()){
+            if(entry.getKey().equals(m_rootFolder.getPath())){
+                continue;
+            }
+            conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+            if(conflictsSet.contains(conflictRep)){
+                Blob blob = (Blob)theirsCommit.getRootFolder().GetItem(entry.getValue());
+                if(res.containsKey(entry.getKey())){
+                    res.get(entry.getKey()).setTheirsContent(blob.GetContent());
+                }
+                else{
+                    Conflict conflictToInsert = new Conflict(entry.getKey(),null,null,blob.GetContent());
+                    res.put(entry.getKey(),conflictToInsert);
+                }
+            }
+        }
+        return res;
+    }
+
+    private Integer calculateConflictRep(Path pathToFind,Map<Path, String> ncaPathToSha1Map,Map<Path, String> oursPathToSha1Map, Map<Path, String> theirsPathToSha1Map) {
+        Integer conflictRep = 0b00000000;
+        String ncaCurrentFileSha1 = ncaPathToSha1Map.get(pathToFind);
+        String oursCurrentFileSha1 = oursPathToSha1Map.get(pathToFind);
+        String theirsCurrentFileSha1 = theirsPathToSha1Map.get(pathToFind);
+
+
+        // if exists in nca
+        if (ncaPathToSha1Map.containsKey(pathToFind)){
+            conflictRep=turnOnBit(0,conflictRep);
+        }
+        // if exists in ours
+        if (oursPathToSha1Map.containsKey(pathToFind)){
+            conflictRep=turnOnBit(1,conflictRep);
+        }
+        //if exists in theirs
+        if (theirsPathToSha1Map.containsKey(pathToFind)){
+            conflictRep=turnOnBit(2,conflictRep);
+        }
+        //nca vs ours
+        if( oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(ncaCurrentFileSha1)
+                ||  ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(oursCurrentFileSha1)){
+            conflictRep=turnOnBit(3,conflictRep);
+        }
+        //nca vs theirs
+        if( theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(ncaCurrentFileSha1)
+            ||ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(theirsCurrentFileSha1)){
+            conflictRep=turnOnBit(4,conflictRep);
+        }
+        //ours vs theirs
+        if(theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(oursCurrentFileSha1)
+            || oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(theirsCurrentFileSha1) ){
+            conflictRep=turnOnBit(5,conflictRep);
+        }
+
+        return conflictRep;
+    }
+
+    private Integer turnOnBit(int index,Integer conflictByteRep) {
+        Integer mask = 0b100000;
+        mask = mask>>index;
+        return conflictByteRep | mask;
+    }
 }

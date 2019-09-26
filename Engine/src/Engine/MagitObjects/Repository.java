@@ -3,8 +3,10 @@ package Engine.MagitObjects;
 import Engine.Engine;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
+import Engine.Conflict;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 
 import java.io.*;
@@ -22,6 +24,7 @@ public class Repository {
     private Branch m_headBranch;
     private Commit m_currentCommit=null;
     private Folder m_WC;
+    private Set<Integer> m_conflictsSet;
     private Map<String,Commit> m_commitsMap = new HashMap<String, Commit>();
 
     // getters
@@ -96,12 +99,29 @@ public class Repository {
         m_branches = new HashMap<String, Branch>();
         m_pathToMagitDirectory = m_repositoryPath.resolve(".magit");
         m_WC = new Folder(m_repositoryPath);
+        m_conflictsSet = createConflictsSet();
+
         if(!i_exists){
             initializeRepository();
         }
         else{
             switchRepository();
         }
+    }
+
+    private Set<Integer> createConflictsSet() {
+        Set <Integer> res = new HashSet<>();
+
+        res.add(0b011110);
+        res.add(0b011111);
+        res.add(0b100110);
+        res.add(0b100111);
+        res.add(0b101111);
+        res.add(0b110111);
+        res.add(0b111110);
+        res.add(0b111111);
+
+        return res;
     }
 
     public void InsertBranch(Branch i_branch){
@@ -423,4 +443,59 @@ public class Repository {
         }
     }
 
+    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
+        Map<Path,Conflict> conflicts = new HashMap<>();
+        if(checkConflicts){
+            new Commit(i_theirsBranch.getCommitSha1()).flushForMerge(new Commit(findAncestorSha1(m_currentCommit.getSha1(),i_theirsBranch.getCommitSha1())),m_currentCommit);
+            conflicts =  checkConflicts (i_theirsBranch);
+            if(conflicts.isEmpty()){
+                try {
+                    createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                }
+                catch(FileAlreadyExistsException e){
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                }
+            }
+        }
+        else{
+            try{
+                createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+            catch(FileAlreadyExistsException e){
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+
+        }
+        return conflicts;
+    }
+
+    public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        if(!ncaSha1.isEmpty()){
+            Commit ncaCommit = new Commit(ncaSha1);
+            Commit oursCommit = new Commit(oursSha1);
+            Commit theirsCommit = new Commit(theirsSha1);
+            return oursCommit.findConflicts(m_conflictsSet,ncaCommit,theirsCommit);
+        }
+        else{
+            throw new IOException("Something went wrong, please try again");
+        }
+    }
+
+    private String findAncestorSha1(String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {
+        AncestorFinder anf = new AncestorFinder(sha1->{
+            try{
+                return new Commit(sha1);
+            }
+            catch (IOException e ){
+                return null;
+            }
+        });
+        return anf.traceAncestor(i_ourSha1,i_theirsSha1);
+    }
 }

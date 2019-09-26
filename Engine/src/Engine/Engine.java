@@ -86,7 +86,6 @@ public class Engine {
         }
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
-            System.out.println(path);
             m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
         }
     }
@@ -202,40 +201,26 @@ public class Engine {
         m_currentRepository.AddBranch(i_branchName,i_checkout);
     }
 
-    public void Merge(String i_theirs)throws FileNotFoundException,IOException{
+    public Map<Path,Conflict> Merge(String i_theirs,boolean checkConflicts)throws FileNotFoundException,IOException{
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
-        Commit nca;
-        //if exists
+
+        //if branch exists
         if(theirsBranch!= null){
-            nca =  getAncestor(theirsBranch);
-            checkConflicts(nca);
+            return  m_currentRepository.Merge(theirsBranch,checkConflicts);
         }
         else{
-            
+            throw new FileNotFoundException(i_theirs + " doesn't exist");
         }
     }
 
-    private void checkConflicts(Commit nca) {
-
-    }
-
-    private Commit getAncestor(Branch i_theirsBranch)throws FileNotFoundException,IOException {
-        String oursSha1 = m_currentRepository.GeCurrentCommit().getSha1();
-        String theirsSha1 = i_theirsBranch.getCommitSha1();
-
-        AncestorFinder anf = new AncestorFinder(sha1->{
-           try{
-              return new Commit(sha1);
-           }
-           catch (IOException e ){
-                return null;
-           }
-        });
-        try{
-            return new Commit(anf.traceAncestor(oursSha1,theirsSha1));
+    public Map<Path,Conflict> CheckConflicts(String  i_theirsBranchName)throws FileNotFoundException,IOException{
+        Branch theirsBranch = m_currentRepository.GetBranches().get(i_theirsBranchName);
+        if(theirsBranch!=null){
+            return  m_currentRepository.checkConflicts(theirsBranch);
         }
-        catch(MappingFunctionFailureException e){
-            return null;
+        else {
+            throw new FileNotFoundException("The branch " + i_theirsBranchName + "doesnt exists");
         }
     }
+
 }

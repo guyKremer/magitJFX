@@ -52,6 +52,30 @@ public class CenterController {
 
     private AppController mainController;
 
+    public Text getAuthorText() {
+        return authorText;
+    }
+
+    public Text getParent1Sha1Text() {
+        return parent1Sha1Text;
+    }
+
+    public Text getParent2Sha1Text() {
+        return parent2Sha1Text;
+    }
+
+    public Text getDateText() {
+        return dateText;
+    }
+
+    public TextArea getCommitMsg() {
+        return commitMsg;
+    }
+
+    public Text getCommitSha1Text() {
+        return commitSha1Text;
+    }
+
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
     }
@@ -59,6 +83,7 @@ public class CenterController {
     public void ResetCommitsTree() throws IOException {
         m_TreeGraph = new Graph();
 
+        initComponentsInTree();
         initComponentsInTree();
 
         PannableCanvas canvas = m_TreeGraph.getCanvas();

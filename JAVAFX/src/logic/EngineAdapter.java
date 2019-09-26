@@ -4,17 +4,17 @@ import Engine.Engine;
 import Engine.*;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
-import javafx.beans.binding.BooleanExpression;
 import javafx.concurrent.Task;
 import logic.tasks.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class EngineAdapter {
 
@@ -113,10 +113,22 @@ public class EngineAdapter {
         return res;
     }
 
-    public void merge(String branchName) {
-        currentRunningTask = new MergeTask(engine,branchName);
-        currentRunningTask.run();
+    public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException {
+        Map<Path,Conflict> conflicts = engine.Merge(theirsBranchName,checkConflicts);
+        if(conflicts.isEmpty()){
+            commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+        }
+        return conflicts;
+    }
+    public Map<Path,Conflict> CheckConflicts(String branchName)throws FileNotFoundException,IOException {
+        return engine.CheckConflicts(branchName);
+        /*
+         Task<Map<Path,Conflict>> tempTask = new CheckConflictsTask(engine,branchName);
+
+        Map<Path,Conflict> temp = tempTask.run().;
        // new Thread(currentRunningTask).start();
+
+         */
     }
 
     public void Commit(String message, Consumer<Commit> commitConsumer) {
