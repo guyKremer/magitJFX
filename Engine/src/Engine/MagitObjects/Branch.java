@@ -12,9 +12,9 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class Branch {
-    private Path m_pathToBranch;
-    private String m_commitSha1;
-    private String m_name;
+    protected Path m_pathToBranch;
+    protected String m_commitSha1;
+    protected String m_name;
 
     public Branch(){};
 

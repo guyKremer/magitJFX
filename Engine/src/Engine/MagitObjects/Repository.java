@@ -330,11 +330,31 @@ public class Repository {
     }
 
     private void loadBranches()throws IOException {
+        List<String> lines;
         Path pathToBranchesDirectory = m_pathToMagitDirectory.resolve("branches");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(pathToBranchesDirectory)){
             for(Path entry: stream) {
-                if(!entry.getFileName().toString().equals("HEAD")){
-                    m_branches.put(entry.getFileName().toString(),new Branch(entry,FileUtils.readFileToString(entry.toFile(), Charset.forName("utf-8"))));
+                if(!entry.getFileName().toString().equals("HEAD") && !entry.toAbsolutePath().toFile().isDirectory()){
+                    lines = Files.readAllLines(entry.toAbsolutePath());
+                    if(lines.size() == 2) {
+                        m_branches.put(entry.getFileName().toString(),
+                                new RTBranch(entry, lines.get(0)));
+                    }
+                    else{
+                        m_branches.put(entry.getFileName().toString(),
+                                new Branch(entry, lines.get(0)));
+                    }
+                }
+                else if(entry.toAbsolutePath().toFile().isDirectory()){
+                    try (DirectoryStream<Path> stream1 = Files.newDirectoryStream(entry.toAbsolutePath())){
+                        for(Path entry1 : stream1){
+                            lines = Files.readAllLines(entry1.toAbsolutePath());
+                            RBranch rb = new RBranch(entry1,
+                                    entry.getFileName().toString() + "/" + entry1.getFileName().toString(),
+                                    lines.get(0));
+                            m_branches.put(rb.getName(), rb);
+                        }
+                    }
                 }
             }
         }
