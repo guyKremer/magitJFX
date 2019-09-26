@@ -11,9 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -24,7 +22,7 @@ import javafx.stage.WindowEvent;
 import logic.EngineAdapter;
 import Engine.Conflict;
 import javafx.fxml.FXMLLoader;
-
+import Engine.Status;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -88,6 +86,15 @@ public class AppController {
     }
 
     public void Merge()throws FileNotFoundException,IOException,Exception{
+        if (engineAdapter.isOpenChanges()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Open Changes");
+            alert.setHeaderText("Cant merge");
+            alert.setContentText("You have uncommitted changes,please change them first");
+
+            alert.showAndWait();
+            return;
+        }
         Map<Path,Conflict> conflicts;
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
         Button mergeButton = new Button("Merge");
@@ -109,6 +116,7 @@ public class AppController {
                 engineAdapter.Merge(branchName,commitConsumer,false);
                 dialog.close();
             }
+            //if there is nothing to commit(very rare)
             catch (IOException e){
                 dialog.close();
                 System.out.println(e.getMessage());

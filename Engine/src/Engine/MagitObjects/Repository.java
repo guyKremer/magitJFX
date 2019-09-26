@@ -112,10 +112,7 @@ public class Repository {
     private Set<Integer> createConflictsSet() {
         Set <Integer> res = new HashSet<>();
 
-        res.add(0b011110);
         res.add(0b011111);
-        res.add(0b100110);
-        res.add(0b100111);
         res.add(0b101111);
         res.add(0b110111);
         res.add(0b111110);
