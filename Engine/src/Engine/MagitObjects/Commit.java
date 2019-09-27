@@ -268,7 +268,7 @@ public class Commit implements CommitRepresentative {
 
 
         for (Map.Entry<Path,String> entry : ncaPathToSha1Map.entrySet()){
-            if(entry.getKey().equals(m_rootFolder.getPath())){
+            if(entry.getKey().equals(m_rootFolder.getPath())||ncaCommit.getRootFolder().GetItem(entry.getValue()).GetType().equals("folder")){
                 continue;
             }
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
@@ -279,7 +279,7 @@ public class Commit implements CommitRepresentative {
             }
         }
         for (Map.Entry<Path,String> entry : oursPathToSha1Map.entrySet()){
-            if(entry.getKey().equals(m_rootFolder.getPath())){
+            if(entry.getKey().equals(m_rootFolder.getPath())||m_rootFolder.GetItem(entry.getValue()).GetType().equals("folder")){
                 continue;
             }
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
@@ -295,7 +295,7 @@ public class Commit implements CommitRepresentative {
             }
         }
         for (Map.Entry<Path,String> entry : theirsPathToSha1Map.entrySet()){
-            if(entry.getKey().equals(m_rootFolder.getPath())){
+            if(entry.getKey().equals(m_rootFolder.getPath()) || theirsCommit.getRootFolder().GetItem(entry.getValue()).GetType().equals("folder")){
                 continue;
             }
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
