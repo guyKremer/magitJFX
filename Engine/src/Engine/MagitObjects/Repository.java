@@ -112,10 +112,7 @@ public class Repository {
     private Set<Integer> createConflictsSet() {
         Set <Integer> res = new HashSet<>();
 
-        res.add(0b011110);
         res.add(0b011111);
-        res.add(0b100110);
-        res.add(0b100111);
         res.add(0b101111);
         res.add(0b110111);
         res.add(0b111110);
@@ -445,6 +442,11 @@ public class Repository {
 
     public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
         Map<Path,Conflict> conflicts = new HashMap<>();
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        //end of fast forward merge check
         if(checkConflicts){
             new Commit(i_theirsBranch.getCommitSha1()).flushForMerge(new Commit(findAncestorSha1(m_currentCommit.getSha1(),i_theirsBranch.getCommitSha1())),m_currentCommit);
             conflicts =  checkConflicts (i_theirsBranch);
@@ -470,6 +472,33 @@ public class Repository {
         }
         return conflicts;
     }
+
+    public int needFastForwardMerge(Branch i_theirsBranch)throws FileNotFoundException,IOException {
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        if(ncaSha1.equals(oursSha1)){
+            return 1;
+
+        }
+        else if (ncaSha1.equals(theirsSha1)){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+    }
+
+   public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
+        switchCommit(GetBranch(theirsBranchName).getCommitSha1());
+   }
+
+   private void switchCommit(String sha1)throws FileNotFoundException,IOException{
+       m_currentCommit = new Commit(sha1);
+       m_currentCommit.flush();
+       m_headBranch.setCommitSha1(m_currentCommit.getSha1());
+   }
 
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
         String oursSha1 = m_currentCommit.getSha1();

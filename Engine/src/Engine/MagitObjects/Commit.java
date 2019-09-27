@@ -70,7 +70,11 @@ public class Commit implements CommitRepresentative {
         return 1;
     }
 
-    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1,String i_SecondCommitSha1,
+    public void setSha1(String m_sha1) {
+        this.m_sha1 = m_sha1;
+    }
+
+    public Commit(String i_message, Folder i_root, String i_FirstCommitSha1, String i_SecondCommitSha1,
                   String i_dateOfCreation, String i_creator)
     {
         m_message=i_message;

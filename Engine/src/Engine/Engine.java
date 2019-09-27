@@ -119,6 +119,14 @@ public class Engine {
         return m_currentRepository.GetHeadBranch();
     }
 
+    public int needFastForwardMerge(String theirsBranchName)throws FileNotFoundException,IOException {
+        return m_currentRepository.needFastForwardMerge(m_currentRepository.GetBranch(theirsBranchName));
+    }
+
+    public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
+        m_currentRepository.forwardMerge(theirsBranchName);
+    }
+
 
     public static class Utils{
         public static void zipToFile(Path i_pathToZippedFile, String i_fileContent) throws IOException{

@@ -133,6 +133,7 @@ public class CenterController {
     }
 
     private void createCommits() throws IOException {
+        System.out.println(mainController.getEngineAdapter().getEngine().GetCurrentRepository());
         mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetCommitsMap()
                 .values()
                 .stream()
@@ -257,6 +258,8 @@ public class CenterController {
             commitSha1Text.textProperty().set(commit.getSha1());
             parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
             parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
+            commitMsg.textProperty().set(commit.getMessage());
+
         };
         mainController.getEngineAdapter().Commit(message,commitConsumer);
     }

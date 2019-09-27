@@ -5,6 +5,7 @@ import Engine.*;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 import logic.tasks.*;
 
 import java.io.File;
@@ -12,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -113,12 +116,45 @@ public class EngineAdapter {
         return res;
     }
 
-    public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException {
-        Map<Path,Conflict> conflicts = engine.Merge(theirsBranchName,checkConflicts);
-        if(conflicts.isEmpty()){
-            commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+    public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException{
+            Map<Path,Conflict> conflicts = new HashMap<>();
+            int fastMergeType = engine.needFastForwardMerge(theirsBranchName);
+            if(fastMergeType == 1){
+                 engine.forwardMerge(theirsBranchName);
+                 commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+                 return conflicts;
+            }
+            else if (fastMergeType == 2){
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("information");
+                alert.setHeaderText("No Merge Needed");
+                alert.setContentText("no merge needed because " + theirsBranchName  +" last commit is contained inside " +engine.GetHeadBranch().getName() + " last commit");
+
+                alert.showAndWait();
+                return conflicts;
+            }
+            else{
+                conflicts = engine.Merge(theirsBranchName,checkConflicts);
+                if(conflicts.isEmpty()){
+                    commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+                }
+                return conflicts;
+            }
+
+    }
+
+    public Status showStatus()throws IOException{
+        return engine.showStatus();
+    }
+    public boolean isOpenChanges()throws IOException{
+        Status status = showStatus();
+        if (!status.getModifiedFiles().isEmpty() || !status.getAddedFiles().isEmpty()
+                || !status.getDeletedFiles().isEmpty()){
+            return true;
         }
-        return conflicts;
+        else {
+            return false;
+        }
     }
     public Map<Path,Conflict> CheckConflicts(String branchName)throws FileNotFoundException,IOException {
         return engine.CheckConflicts(branchName);
