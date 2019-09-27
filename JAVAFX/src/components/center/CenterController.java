@@ -2,7 +2,6 @@ package components.center;
 
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
-import Engine.MagitObjects.FolderItems.FolderItem;
 import Engine.MagitObjects.RBranch;
 import Engine.MagitObjects.RTBranch;
 import com.fxgraph.edges.Edge;
@@ -19,14 +18,11 @@ import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import javafx.scene.text.TextFlow;
-import puk.team.course.magit.ancestor.finder.*;
 
 public class CenterController {
 
@@ -83,7 +79,6 @@ public class CenterController {
     public void ResetCommitsTree() throws IOException {
         m_TreeGraph = new Graph();
 
-        initComponentsInTree();
         initComponentsInTree();
 
         PannableCanvas canvas = m_TreeGraph.getCanvas();
