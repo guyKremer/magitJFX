@@ -1,12 +1,10 @@
 package xmlFormat;
 
 import Engine.Engine;
-import Engine.MagitObjects.Branch;
-import Engine.MagitObjects.Commit;
+import Engine.MagitObjects.*;
 import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
-import Engine.MagitObjects.Repository;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,7 +32,7 @@ public class xmlUtiles {
     private static Set<String> m_blobsIds;
     private static Set<String> m_commitsIds;
 
-    public static Repository LoadXml(String i_path) throws XmlValidatorException, JAXBException, IOException {
+    public static Repository LoadXml(String i_path) throws Exception {
 
         String extension = getFileExtension(i_path);
 
@@ -361,12 +359,23 @@ public class xmlUtiles {
         return "There is 2 or more " + magitObj + " with the same ID";
     }
 
-    private static Repository parseRepository() throws FileAlreadyExistsException, IOException {
+    private static Repository parseRepository() throws Exception {
 
         if(Files.exists(Paths.get(m_mr.getLocation()))){
             throw new FileAlreadyExistsException("Folder with the same name already exists");
         }
-        m_repository = new Repository(m_mr.getName(),m_mr.getLocation(), false);
+
+        doesAllTrackingBranchesTrackAfterRemoteBranchThatIsRemote();
+
+        if(m_mr.magitRemoteReference == null || m_mr.magitRemoteReference == null) {
+            m_repository = new Repository(m_mr.getName(), m_mr.getLocation(), false);
+        }
+        else{
+            m_repository = new LocalRepository(m_mr.getName(), m_mr.getLocation(), false);
+            ((LocalRepository) m_repository).setRemoteRepoLocation(m_mr.magitRemoteReference.location);
+            ((LocalRepository) m_repository).setRemoteRepoName(m_mr.magitRemoteReference.name);
+        }
+
         Map<String, String> commitIdSha1 = new HashMap<String, String>(m_mscList.size());
 
         createAllCommits(commitIdSha1);
@@ -375,6 +384,33 @@ public class xmlUtiles {
         m_repository.SetCommitFromBranch(m_repository.GetHeadBranch(),true);
         return m_repository;
     }
+
+    private static void doesAllTrackingBranchesTrackAfterRemoteBranchThatIsRemote() throws Exception
+    {
+        List<MagitSingleBranch> magitSingleBranches = m_mr.magitBranches.getMagitSingleBranch();
+
+        for (MagitSingleBranch magitSingleBranch : magitSingleBranches)
+        {
+            if (magitSingleBranch.tracking != null)
+            {
+                if (branchTrackingAfterIsNotRemote(magitSingleBranch, magitSingleBranches))
+                    throw new Exception("Branch " + magitSingleBranch.name + " tracking after branch that is not remote");
+            }
+        }
+    }
+
+    private static boolean branchTrackingAfterIsNotRemote(MagitSingleBranch magitSingleBranchTracking,
+                                                   List<MagitSingleBranch> magitSingleBranches)
+    {
+        String trackingAfterName = magitSingleBranchTracking.trackingAfter;
+
+        return magitSingleBranches
+                .stream()
+                .filter(magitSingleBranch -> magitSingleBranch.name.equals(trackingAfterName))
+                .anyMatch(magitSingleBranch -> magitSingleBranch.isRemote == null);
+    }
+
+
 
     private static void createAllCommits(Map<String, String> i_commitIdSha1) throws IOException {
         for (MagitSingleCommit msc : m_mscList) {
@@ -390,10 +426,25 @@ public class xmlUtiles {
 
         for (MagitSingleBranch msb : m_msbList) {
             currCommitSha1 = i_commitIdSha1.get(msb.getPointedCommit().getId());
-            currBranch = new Branch(
-                    Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
-                    currCommitSha1
-            );
+            if(msb.isRemote != null) {
+                currBranch = new RBranch(
+                        Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
+                        msb.getName(),
+                        currCommitSha1
+                );
+            }
+            else if(msb.tracking != null){
+                currBranch = new RTBranch(
+                        Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
+                        currCommitSha1
+                );
+            }
+            else{
+                currBranch = new Branch(
+                        Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
+                        currCommitSha1
+                );
+            }
             m_repository.InsertBranch(currBranch);
             if (msb.getName().equals(m_mr.getMagitBranches().getHead())){
                 m_repository.SetHeadBranch(currBranch);

@@ -2,13 +2,15 @@ package components.center;
 
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
-import Engine.MagitObjects.FolderItems.FolderItem;
+import Engine.MagitObjects.RBranch;
+import Engine.MagitObjects.RTBranch;
 import com.fxgraph.edges.Edge;
 import com.fxgraph.graph.ICell;
 import com.fxgraph.graph.Model;
 import com.fxgraph.graph.PannableCanvas;
 import com.fxgraph.graph.Graph;
 import components.app.AppController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
@@ -16,14 +18,11 @@ import javafx.scene.text.Text;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import javafx.scene.text.TextFlow;
-import puk.team.course.magit.ancestor.finder.*;
 
 public class CenterController {
 
@@ -81,9 +80,12 @@ public class CenterController {
         m_TreeGraph = new Graph();
 
         initComponentsInTree();
-        initComponentsInTree();
 
         PannableCanvas canvas = m_TreeGraph.getCanvas();
+        Platform.runLater(() -> {
+            m_TreeGraph.getUseViewportGestures().set(false);
+            m_TreeGraph.getUseNodeGestures().set(false);
+        });
         m_TreeScrollPane.setContent(canvas);
     }
 
@@ -181,8 +183,20 @@ public class CenterController {
     {
         List<String> branchNames = i_BranchesOfCommit
                 .stream()
-                .map(branch -> branch.getName())
-                .collect(Collectors.toList());
+                .map(branch ->
+                {
+                    StringBuilder currentBranch = new StringBuilder();
+                    if (mainController.getEngineAdapter().getEngine().GetHeadBranch().getName().equals(branch.getName()))
+                        currentBranch.append("--->");
+
+                    if (branch.getClass().equals(RBranch.class))
+                        currentBranch.append("(RB)");
+
+                    if (branch.getClass().equals(RTBranch.class))
+                        currentBranch.append("(RTB)");
+
+                    return currentBranch.append(branch.getName()).toString();
+                }).collect(Collectors.toList());
 
         return String.join(", ", branchNames);
     }

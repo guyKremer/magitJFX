@@ -13,15 +13,25 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class Branch {
-    private Path m_pathToBranch;
-    private String m_commitSha1;
-    private String m_name;
+    protected Path m_pathToBranch;
+    protected String m_commitSha1;
+    protected String m_name;
 
     public Branch(){};
 
     public Branch(Path i_pathToBranch, String i_commitSha1)throws java.io.IOException {
         m_pathToBranch = i_pathToBranch;
         m_name = i_pathToBranch.getFileName().toString();
+        m_commitSha1 = i_commitSha1;
+        if(m_commitSha1.equals("null")){
+            m_commitSha1=null;
+        }
+        flushBranch();
+    }
+
+    public Branch(Path i_pathToBranch, String i_name, String i_commitSha1) throws IOException {
+        m_pathToBranch = i_pathToBranch;
+        m_name = i_name;
         m_commitSha1 = i_commitSha1;
         if(m_commitSha1.equals("null")){
             m_commitSha1=null;
