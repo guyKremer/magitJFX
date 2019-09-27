@@ -94,7 +94,7 @@ public class EngineAdapter {
 
     public void createNewBranch(String branchName, boolean checkout) {
         currentRunningTask = new CreateNewBranchTask(engine, branchName, checkout);
-        new Thread(currentRunningTask).start();
+        currentRunningTask.run();
     }
 
 

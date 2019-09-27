@@ -4,6 +4,7 @@ import Engine.Engine;
 import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.*;
 import Engine.Conflict;
 
@@ -273,6 +274,10 @@ public class Commit implements CommitRepresentative {
             }
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
             if(conflictsSet.contains(conflictRep)){
+                if(conflictRep.equals(new Integer(0b110011))){
+                    continue;
+                }
+
                 Blob blob = (Blob)ncaCommit.getRootFolder().GetItem(entry.getValue());
                 Conflict conflictToInsert = new Conflict(entry.getKey(),blob.GetContent(),null,null);
                 res.put(entry.getKey(),conflictToInsert);
@@ -282,8 +287,14 @@ public class Commit implements CommitRepresentative {
             if(entry.getKey().equals(m_rootFolder.getPath())||m_rootFolder.GetItem(entry.getValue()).GetType().equals("folder")){
                 continue;
             }
+            System.out.println(entry.getKey());
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
+
             if(conflictsSet.contains(conflictRep)){
+                if(conflictRep.equals(new Integer(0b110011))){
+                    FileUtils.deleteQuietly(entry.getKey().toFile());
+                    continue;
+                }
                 Blob blob = (Blob) m_rootFolder.GetItem(entry.getValue());
                 if(res.containsKey(entry.getKey())){
                     res.get(entry.getKey()).setOursContent(blob.GetContent());
@@ -300,6 +311,10 @@ public class Commit implements CommitRepresentative {
             }
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
             if(conflictsSet.contains(conflictRep)){
+                if(conflictRep.equals(new Integer(0b110011))){
+                    continue;
+                }
+
                 Blob blob = (Blob)theirsCommit.getRootFolder().GetItem(entry.getValue());
                 if(res.containsKey(entry.getKey())){
                     res.get(entry.getKey()).setTheirsContent(blob.GetContent());
@@ -330,16 +345,20 @@ public class Commit implements CommitRepresentative {
         }
         //if exists in theirs
         if (theirsPathToSha1Map.containsKey(pathToFind)){
+
             conflictRep=turnOnBit(2,conflictRep);
         }
         //nca vs ours
         if( oursCurrentFileSha1 !=null && !oursCurrentFileSha1.equals(ncaCurrentFileSha1)
                 ||  ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(oursCurrentFileSha1)){
+
             conflictRep=turnOnBit(3,conflictRep);
         }
         //nca vs theirs
         if( theirsCurrentFileSha1 !=null && !theirsCurrentFileSha1.equals(ncaCurrentFileSha1)
             ||ncaCurrentFileSha1 !=null && !ncaCurrentFileSha1.equals(theirsCurrentFileSha1)){
+
+
             conflictRep=turnOnBit(4,conflictRep);
         }
         //ours vs theirs

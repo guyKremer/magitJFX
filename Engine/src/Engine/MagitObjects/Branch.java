@@ -64,6 +64,7 @@ public class Branch {
     }
 
     public void flushBranch()throws java.io.IOException{
+        System.out.println("inn");
         FileUtils.writeStringToFile(m_pathToBranch.toFile(), m_commitSha1, Charset.forName("utf-8"),false);
     }
 
