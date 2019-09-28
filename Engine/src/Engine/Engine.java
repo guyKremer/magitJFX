@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -272,5 +273,80 @@ public class Engine {
             currentCommit.getRootFolder().initFolderPaths(i_NewPathOfRepository);
         }
     }
+
+    public void Fetch() throws IOException {
+        Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoLocation(),
+                ((LocalRepository)m_currentRepository).getRemoteRepoName(), true);
+        Map<String, Branch> newBranches = new HashMap<>();
+        Branch tempBranch;
+
+        //build new branches to the LR
+
+        for(Map.Entry<String,Branch> branch: RR.GetBranches().entrySet()){
+            if(m_currentRepository.GetBranches().containsKey(RR.GetName() + "/" + branch.getValue())){
+                newBranches.put(RR.GetName() + "/" + branch.getValue(),branch.getValue());
+            }
+        }
+
+        for(Map.Entry<String,Branch> branch : m_currentRepository.GetBranches().entrySet()){
+            if(branch.getValue() instanceof RBranch && !(newBranches.containsKey(branch.getKey()))){
+                newBranches.put(branch.getKey(),branch.getValue());
+            }
+            else if(!(branch.getValue() instanceof RBranch)){
+                newBranches.put(branch.getKey(),branch.getValue());
+            }
+        }
+
+        // change path to branches
+
+        for(Map.Entry<String,Branch> branch : newBranches.entrySet()){
+            if(branch.getValue() instanceof RBranch){
+                tempBranch = new RBranch(
+                        m_currentRepository.GetRepositoryPath().resolve(".magit").resolve("branches").resolve(m_currentRepository.GetName())
+                        .resolve(branch.getValue().getName()),
+                        m_currentRepository.GetName() +"/" + branch.getValue().getName(),
+                        branch.getValue().getCommitSha1());
+            }
+        }
+
+        m_currentRepository.SetBranches(newBranches);
+    }
+
+    public void Pull() throws IOException {
+        Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoLocation(),
+                ((LocalRepository)m_currentRepository).getRemoteRepoName(), true);
+
+        Branch branch;
+        RTBranch newRTBranch;
+        RBranch newRBranch;
+
+        if(m_currentRepository.GetHeadBranch() instanceof RTBranch){
+            //CHECK IF NEED PUSH BEFORE
+            //*************************
+
+            // update RB in LR
+            branch = RR.GetBranches().get(m_currentRepository.GetHeadBranch().getName());
+            m_currentRepository.GetBranches().remove(RR.GetName() + "/" + branch.getName());
+
+            newRBranch = new RBranch(Repository.m_pathToMagitDirectory.resolve("branches").resolve(RR.GetName()),
+                    RR.GetName() + "/" + branch.getName(), branch.getName());
+
+            m_currentRepository.InsertBranch(newRBranch);
+
+            // update RTB in LR
+
+            m_currentRepository.GetBranches().remove(m_currentRepository.GetHeadBranch().getName());
+
+            newRTBranch = new RTBranch(Repository.m_pathToMagitDirectory.resolve("branches").
+                    resolve(branch.getName()), branch.getCommitSha1());
+
+            m_currentRepository.SetHeadBranch(newRTBranch);
+
+            checkOut(m_currentRepository.GetHeadBranch().getName());
+        }
+
+    }
+
+
 
 }

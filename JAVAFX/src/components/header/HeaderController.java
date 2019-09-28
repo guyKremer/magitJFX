@@ -42,6 +42,7 @@ public class HeaderController {
     @FXML private MenuItem checkout;
     @FXML private Button commit;
     @FXML private Button clone;
+    @FXML private Button fetch;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -161,6 +162,12 @@ public class HeaderController {
             mainController.getEngineAdapter().getEngine().Clone(RR,LR,repoName);
             mainController.ResetCommitTree();
         }
+    }
+
+    @FXML
+    public void fetchActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Fetch();
+        mainController.ResetCommitTree();
     }
 
 

@@ -367,6 +367,14 @@ public class Repository {
             for(Path entry: stream) {
                 if(!entry.getFileName().toString().equals("HEAD") && !entry.toAbsolutePath().toFile().isDirectory()){
                     lines = Files.readAllLines(entry.toAbsolutePath());
+                    /*
+                    if(this instanceof Repository){
+                        m_branches.put(entry.getFileName().toString(),
+                                new RBranch(entry,
+                                        m_pathToMagitDirectory.resolve("branches").resolve(m_name) +"/" + lines.get(0)
+                                        ,lines.get(0)));
+                    }
+                     */
                     if(lines.size() == 2) {
                         m_branches.put(entry.getFileName().toString(),
                                 new RTBranch(entry, lines.get(0)));
