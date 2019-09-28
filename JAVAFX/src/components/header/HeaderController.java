@@ -2,6 +2,7 @@ package components.header;
 
 import components.CommonResourcesPaths;
 import components.app.AppController;
+import components.center.CenterController;
 import components.generics.controllers.OneInputPopupController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
@@ -21,6 +23,7 @@ import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -37,6 +40,10 @@ public class HeaderController {
     @FXML private MenuItem showAllBranches;
     @FXML private MenuItem createNewBranch;
     @FXML private MenuItem checkout;
+    @FXML private Button commit;
+    @FXML private Button clone;
+    @FXML private Button fetch;
+    @FXML private Button pull;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -63,7 +70,7 @@ public class HeaderController {
     }
 
     @FXML
-    public void loadRepositoryFromXmlActionListener(ActionEvent actionEvent){
+    public void loadRepositoryFromXmlActionListener(ActionEvent actionEvent) throws InterruptedException, IOException {
         File file;
         file = showFileChooserDialog();
         if(file != null){
@@ -76,7 +83,7 @@ public class HeaderController {
         File file;
         String repoName;
 
-        file = showDirChooserDialog();
+        file = showDirChooserDialog("Select Repository directory");
 
         repoName = showTextInputDialog("Repository Name","Repository Name", "Please Enter Repository Name");
 
@@ -86,10 +93,10 @@ public class HeaderController {
     }
 
     @FXML
-    public void switchRepoActionListener(ActionEvent actionEvent){
+    public void switchRepoActionListener(ActionEvent actionEvent) throws IOException, InterruptedException {
         File file;
 
-        file = showDirChooserDialog();
+        file = showDirChooserDialog("Select Repository directory");
 
         if(file != null){
             mainController.switchRepo(file.getPath());
@@ -130,13 +137,60 @@ public class HeaderController {
     }
 
     @FXML
-    public void checkoutActionListener(ActionEvent actionEvent){
+    public void checkoutActionListener(ActionEvent actionEvent) throws IOException, InterruptedException {
         String branchName;
         boolean checkout = false;
 
         branchName = showTextInputDialog("Checkout Branch","Checkout Branch", "Enter Branch Name");
 
         mainController.checkout(branchName);
+    }
+
+    @FXML
+    public void commitActionListener(ActionEvent actionEvent) throws IOException, InterruptedException {
+        String message =  showTextInputDialog("Commit","Commit", "Enter Commit Message");
+        mainController.Commit(message);
+    }
+
+    @FXML
+    public void cloneActionListener(ActionEvent actionEvent) throws IOException {
+        File RR = showDirChooserDialog("Select Remote Repository");
+        File LR = showDirChooserDialog("Select destination folder");
+        String repoName = showTextInputDialog("Repository name","Enter Repository Name","Name");
+
+        if(LR != null && RR != null){
+            //mainController.createNewRepo(LR.getPath(), repoName);
+            mainController.getEngineAdapter().getEngine().Clone(RR,LR,repoName);
+            mainController.ResetCommitTree();
+        }
+    }
+
+    @FXML
+    public void fetchActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Fetch();
+        mainController.ResetCommitTree();
+    }
+
+    @FXML
+    public void pullActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Pull();
+        mainController.ResetCommitTree();
+    }
+
+    @FXML
+    public void pushActionListener(ActionEvent actionEvent){
+
+    }
+
+    @FXML
+    public void showStatusActionListener(ActionEvent actionEvent){
+
+    }
+
+
+    @FXML
+    public void mergeActionListener(ActionEvent actionEvent)throws FileNotFoundException,IOException,Exception{
+        mainController.Merge();
     }
 
 
@@ -168,19 +222,13 @@ public class HeaderController {
         return result.get();
     }
 
-    public File showDirChooserDialog(){
+    public File showDirChooserDialog(String i_title){
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Select Repository directory");
+        directoryChooser.setTitle(i_title);
         File selectedDirectory = directoryChooser.showDialog(mainController.getPrimaryStage());
 
         return selectedDirectory;
     }
-
-    @FXML
-    public void mergeActionListener(ActionEvent actionEvent){
-        mainController.merge();
-    }
-
 
     public File showFileChooserDialog(){
         FileChooser fileChooser = new FileChooser();

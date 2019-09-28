@@ -1,13 +1,17 @@
 package Engine.MagitObjects.FolderItems;
 
 import Engine.Engine;
+import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.Repository;
 import org.apache.commons.codec.digest.DigestUtils;
 import Engine.Status;
+import org.apache.commons.io.FileUtils;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -72,10 +76,46 @@ public class Blob extends FolderItem {
     @Override
     public void flushToWc(){
         try{
-            File blob = Files.createFile(m_path).toFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(blob));
-            writer.write(m_content);
-            writer.close();
+            File blob;
+            if(!Files.exists(m_path)){
+                 blob = Files.createFile(m_path).toFile();
+            }
+            else{
+                blob = m_path.toFile();
+            }
+            FileUtils.writeStringToFile(blob,m_content, Charset.forName("utf-8"),false);
+        }
+        catch(java.io.IOException e){
+
+        }
+    }
+
+    @Override
+    public void flushForMergeToWc(Commit ancestor, Commit ours){
+        String content;
+        try{
+            File blob;
+            if(!Files.exists(m_path)){
+                blob = Files.createFile(m_path).toFile();
+                content = m_content;
+            }
+            else{
+                Blob ancestorFile = (Blob)ancestor.getRootFolder().GetItem(m_path);
+                Blob oursFile = (Blob)ours.getRootFolder().GetItem(m_path);
+                if(ancestorFile!=null){
+                    if(oursFile.m_sha1.equals(ancestorFile.m_sha1)){
+                        content = m_content;
+                    }
+                    else{
+                        content = oursFile.m_content;
+                    }
+                }
+                else {
+                    content = oursFile.m_content;
+                }
+                blob = m_path.toFile();
+            }
+            FileUtils.writeStringToFile(blob,content, Charset.forName("utf-8"),false);
         }
         catch(java.io.IOException e){
 
@@ -88,5 +128,6 @@ public class Blob extends FolderItem {
         str.append(m_path + ",").append(toString());
         i_str.add(str.toString());
     }
+
 }
 

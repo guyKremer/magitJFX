@@ -1,12 +1,13 @@
 package Engine.MagitObjects;
 
 import Engine.Engine;
-import Engine.MagitObjects.FolderItems.Blob;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+import Engine.Conflict;
+import com.sun.deploy.panel.IProperty;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
+import puk.team.course.magit.ancestor.finder.AncestorFinder;
 
 
 import java.io.*;
@@ -14,11 +15,9 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class Repository {
-    private String m_name;
+    protected String m_name;
     public static Path m_repositoryPath=null;
     public static Path m_pathToMagitDirectory=null;
     public static SimpleDateFormat m_simpleDateFormat = null;
@@ -26,9 +25,37 @@ public class Repository {
     private Branch m_headBranch;
     private Commit m_currentCommit=null;
     private Folder m_WC;
+    private Set<Integer> m_conflictsSet;
+    private Map<String,Commit> m_commitsMap = new HashMap<String, Commit>();
+
+    public void SetCommitsMap(Map<String, Commit> m_commitsMap) {
+        this.m_commitsMap = m_commitsMap;
+    }
 
     // getters
+    public Map<String, Commit> GetCommitsMap() throws IOException {
+        Commit commit;
 
+        for (Map.Entry<String, Branch> entry : m_branches.entrySet()){
+            commit = new Commit(entry.getValue().getCommitSha1());
+            insertCommitsMapRec(commit);
+        }
+        return m_commitsMap;
+    }
+
+    public Map<String, Commit> GetCommitsMapObj(){
+        return m_commitsMap;
+    }
+
+    private void insertCommitsMapRec(Commit commit) throws IOException {
+        m_commitsMap.put(commit.getSha1(),commit);
+        if(!commit.getFirstPrecedingSha1().isEmpty() && commit.getFirstPrecedingSha1() != null){
+            insertCommitsMapRec(new Commit(commit.getFirstPrecedingSha1()));
+        }
+        if(!commit.getSecondPrecedingSha1().isEmpty() && commit.getSecondPrecedingSha1() != null){
+            insertCommitsMapRec(new Commit(commit.getSecondPrecedingSha1()));
+        }
+    }
 
     public String GetName() {
         return m_name;
@@ -45,6 +72,9 @@ public class Repository {
     public Map<String, Branch> GetBranches() {
         return m_branches;
     }
+    public Branch GetBranch(String i_branchName){
+        return m_branches.get(i_branchName);
+    }
 
     public Branch GetHeadBranch() {
         return m_headBranch;
@@ -60,7 +90,11 @@ public class Repository {
 
     //
 
-    public void SetCommitFromBranch(Branch i_branch,boolean flush)throws IOException{
+    public void SetBranches(Map<String, Branch> m_branches) {
+        this.m_branches = m_branches;
+    }
+
+    public void SetCommitFromBranch(Branch i_branch, boolean flush)throws IOException{
         loadCommitFromBranch(i_branch);
         if(flush){
             flushCommit();
@@ -78,12 +112,27 @@ public class Repository {
         m_branches = new HashMap<String, Branch>();
         m_pathToMagitDirectory = m_repositoryPath.resolve(".magit");
         m_WC = new Folder(m_repositoryPath);
+        m_conflictsSet = createConflictsSet();
+
         if(!i_exists){
             initializeRepository();
         }
         else{
             switchRepository();
         }
+    }
+
+    private Set<Integer> createConflictsSet() {
+        Set <Integer> res = new HashSet<>();
+
+        res.add(0b011111);
+        res.add(0b101111);
+        res.add(0b110011);
+        res.add(0b110111);
+        res.add(0b111110);
+        res.add(0b111111);
+
+        return res;
     }
 
     public void InsertBranch(Branch i_branch){
@@ -172,19 +221,22 @@ public class Repository {
          }
         m_WC.UpdateChangedFolderItems(status,pathToItemMap);
          if(m_currentCommit!=null){
-             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getFirstPrecedingSha1(),
-                     m_currentCommit.getSecondPrecedingSha1()
+             m_currentCommit = new Commit(i_message,m_WC,m_currentCommit.getSha1(),null
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
+
          }
          else{
-             m_currentCommit = new Commit(i_message,m_WC,"",""
+             m_currentCommit = new Commit(i_message,m_WC,null,null
                      ,m_simpleDateFormat.format(new Date()),Engine.m_user);
+             m_currentCommit.setSecondPrecedingSha1(null);
          }
 
         m_headBranch.setCommitSha1(m_currentCommit.getSha1());
         m_headBranch.flushBranch();
         Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(m_currentCommit.getSha1())
                 ,m_currentCommit.toString());
+
+        //m_commitsMap.put(m_currentCommit.getSha1(), m_currentCommit);
     }
 
     public void loadCommitFromBranch(Branch i_branch)throws java.io.IOException{
@@ -298,7 +350,7 @@ public class Repository {
     private void switchRepository()throws java.io.IOException {
         loadBranches();
         setHeadBranchFromHead();
-        if(!m_headBranch.getCommitSha1().equals("")){
+        if(!(m_headBranch.getCommitSha1().equals("") || m_headBranch.getCommitSha1().equals("null"))){
             m_currentCommit = new Commit(m_headBranch.getCommitSha1());
             flushCommit();
         }
@@ -309,11 +361,39 @@ public class Repository {
     }
 
     private void loadBranches()throws IOException {
+        List<String> lines;
         Path pathToBranchesDirectory = m_pathToMagitDirectory.resolve("branches");
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(pathToBranchesDirectory)){
             for(Path entry: stream) {
-                if(!entry.getFileName().toString().equals("HEAD")){
-                    m_branches.put(entry.getFileName().toString(),new Branch(entry,FileUtils.readFileToString(entry.toFile(), Charset.forName("utf-8"))));
+                if(!entry.getFileName().toString().equals("HEAD") && !entry.toAbsolutePath().toFile().isDirectory()){
+                    lines = Files.readAllLines(entry.toAbsolutePath());
+                    /*
+                    if(this instanceof Repository){
+                        m_branches.put(entry.getFileName().toString(),
+                                new RBranch(entry,
+                                        m_pathToMagitDirectory.resolve("branches").resolve(m_name) +"/" + lines.get(0)
+                                        ,lines.get(0)));
+                    }
+                     */
+                    if(lines.size() == 2) {
+                        m_branches.put(entry.getFileName().toString(),
+                                new RTBranch(entry, lines.get(0)));
+                    }
+                    else{
+                        m_branches.put(entry.getFileName().toString(),
+                                new Branch(entry, lines.get(0)));
+                    }
+                }
+                else if(entry.toAbsolutePath().toFile().isDirectory()){
+                    try (DirectoryStream<Path> stream1 = Files.newDirectoryStream(entry.toAbsolutePath())){
+                        for(Path entry1 : stream1){
+                            lines = Files.readAllLines(entry1.toAbsolutePath());
+                            RBranch rb = new RBranch(entry1,
+                                    entry.getFileName().toString() + "/" + entry1.getFileName().toString(),
+                                    lines.get(0));
+                            m_branches.put(rb.getName(), rb);
+                        }
+                    }
                 }
             }
         }
@@ -360,6 +440,7 @@ public class Repository {
         }
         else{
             SetHeadBranch(m_branches.get(i_newHeadBranch));
+            //System.out.println(m_headBranch.getName());
             loadCommitFromBranch(m_headBranch);
             flushCommit();
         }
@@ -382,4 +463,96 @@ public class Repository {
         }
     }
 
+    public Map<Path,Conflict> Merge(Branch i_theirsBranch,boolean checkConflicts) throws FileNotFoundException,IOException{
+        Map<Path,Conflict> conflicts = new HashMap<>();
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        if(checkConflicts){
+            new Commit(i_theirsBranch.getCommitSha1()).flushForMerge(new Commit(findAncestorSha1(m_currentCommit.getSha1(),i_theirsBranch.getCommitSha1())),m_currentCommit);
+            conflicts =  checkConflicts (i_theirsBranch);
+
+            if(conflicts.isEmpty()){
+                try {
+                    createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                    m_currentCommit.flush();
+                }
+                catch(FileAlreadyExistsException e){
+                    m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                }
+            }
+        }
+        else{
+            try{
+                createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+            catch(FileAlreadyExistsException e){
+                m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+            }
+
+        }
+        return conflicts;
+    }
+
+    public int needFastForwardMerge(Branch i_theirsBranch)throws FileNotFoundException,IOException {
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        if(ncaSha1.equals(oursSha1)){
+            return 1;
+
+        }
+        else if (ncaSha1.equals(theirsSha1)){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+    }
+
+   public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
+        switchCommit(GetBranch(theirsBranchName).getCommitSha1());
+   }
+
+   private void switchCommit(String sha1)throws FileNotFoundException,IOException{
+       m_currentCommit = new Commit(sha1);
+       m_currentCommit.flush();
+       m_headBranch.setCommitSha1(m_currentCommit.getSha1());
+   }
+
+    public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
+        String oursSha1 = m_currentCommit.getSha1();
+        String theirsSha1 = i_theirsBranch.getCommitSha1();
+        String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
+
+        if(!ncaSha1.isEmpty()){
+            Commit ncaCommit = new Commit(ncaSha1);
+            Commit oursCommit = new Commit(oursSha1);
+            Commit theirsCommit = new Commit(theirsSha1);
+            return oursCommit.findConflicts(m_conflictsSet,ncaCommit,theirsCommit);
+        }
+        else{
+            throw new IOException("Something went wrong, please try again");
+        }
+    }
+
+    private String findAncestorSha1(String i_ourSha1,String i_theirsSha1)throws FileNotFoundException,IOException {
+        AncestorFinder anf = new AncestorFinder(sha1->{
+            try{
+                return new Commit(sha1);
+            }
+            catch (IOException e ){
+                return null;
+            }
+        });
+        return anf.traceAncestor(i_ourSha1,i_theirsSha1);
+    }
+
+    public void SetName(String repoName) {
+        m_name = repoName;
+    }
 }

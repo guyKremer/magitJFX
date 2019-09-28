@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.Repository;
 import Engine.Status;
 
@@ -19,6 +20,14 @@ public abstract class FolderItem implements Comparable<FolderItem>{
     public FolderItem(Path i_path){
         m_path=i_path;
         m_name= m_path.getFileName().toString();
+    }
+
+    public Path getPath() {
+        return m_path;
+    }
+
+    public void setPath(Path i_path) {
+        this.m_path = i_path;
     }
 
     public void SetUpdater(String m_updater) {
@@ -74,6 +83,8 @@ public abstract class FolderItem implements Comparable<FolderItem>{
     public abstract void fullToString(List<String> str);
 
     protected abstract void UpdateChangedFolderItemsRec(Status i_status,Map<Path, FolderItem> i_map);
+
+    public abstract void flushForMergeToWc(Commit ancestor, Commit ours);
 
     protected void updateAuthorAndLastModifiedIfNeeded(Status i_status,Map<Path, FolderItem> i_map){
         if(changed(i_status)) {

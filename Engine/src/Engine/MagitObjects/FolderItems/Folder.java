@@ -1,6 +1,7 @@
 package Engine.MagitObjects.FolderItems;
 
 import Engine.Engine;
+import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.Repository;
 import org.apache.commons.codec.digest.DigestUtils;
 import Engine.Status;
@@ -10,9 +11,11 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import Engine.Status;
+import org.apache.commons.io.FileUtils;
 
 
 public class Folder extends FolderItem{
@@ -128,7 +131,9 @@ public class Folder extends FolderItem{
     public void flushToWc(){
         try{
             for (FolderItem item: m_items){
-                Files.createDirectories(m_path);
+                if(!Files.exists(m_path)){
+                    Files.createDirectories(m_path);
+                }
                 item.flushToWc();
             }
         }
@@ -136,7 +141,20 @@ public class Folder extends FolderItem{
 
         }
     }
+    @Override
+    public void flushForMergeToWc(Commit ancestor, Commit ours){
+        try{
+            for (FolderItem item: m_items){
+                if(!Files.exists(m_path)){
+                    Files.createDirectories(m_path);
+                }
+                item.flushForMergeToWc(ancestor,ours);
+            }
+        }
+        catch(java.io.IOException e){
 
+        }
+    }
 
     public void unzipAndSaveFolder(String i_directorySha1){
         try{
@@ -216,4 +234,49 @@ public class Folder extends FolderItem{
     }
 
 
+    public FolderItem GetItem(String sha1) {
+        FolderItem res=null;
+        for (FolderItem item : m_items) {
+            if(sha1.equals(item.m_sha1)){
+                res = item;
+                break;
+            }
+            else if (item.m_type.equals("folder")) {
+                res = ((Folder) item).GetItem(sha1);
+                if(res != null){
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    public FolderItem GetItem(Path path) {
+        FolderItem res=null;
+        for (FolderItem item : m_items) {
+            if(path.toString().equals(item.m_path.toString())){
+                res = item;
+                break;
+            }
+            else if (item.m_type.equals("folder")) {
+                res = ((Folder) item).GetItem(path);
+                if(res != null){
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    public void initFolderPaths(Path i_NewPathOfRepository) {
+        this.m_path = i_NewPathOfRepository;
+
+        for (FolderItem item : this.m_items) {
+            if (item.m_type.equals("folder")) {
+                Folder currentFolder = (Folder) item;
+                currentFolder.initFolderPaths(i_NewPathOfRepository.resolve(currentFolder.GetName()));
+            } else
+                item.setPath(i_NewPathOfRepository.resolve(item.GetName()));
+        }
+    }
 }

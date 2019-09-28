@@ -8,17 +8,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.commons.ConflictComponentController">
    <children>
       <HBox layoutX="10.0" layoutY="210.0" prefHeight="172.0" prefWidth="1000.0" VBox.vgrow="ALWAYS">
          <children>
             <VBox prefHeight="212.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="332.0" text="Ancestor" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
-                  <TextFlow prefHeight="200.0" prefWidth="200.0">
+                  <TextFlow prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <TextArea maxHeight="-Infinity" prefHeight="187.0" prefWidth="352.0" />
+                        <TextArea fx:id="ancestor" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="187.0" prefWidth="252.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -26,9 +25,9 @@
             <VBox layoutX="10.0" layoutY="10.0" prefHeight="212.0" prefWidth="144.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="296.0" text="Ours" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
-                  <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="187.0" prefWidth="296.0">
+                  <TextFlow maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="187.0" prefWidth="190.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <TextArea prefHeight="187.0" prefWidth="352.0" />
+                        <TextArea fx:id="ours" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="187.0" prefWidth="200.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -36,9 +35,9 @@
             <VBox layoutX="436.0" layoutY="10.0" prefHeight="212.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label alignment="CENTER" prefHeight="17.0" prefWidth="297.0" text="Theirs" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
-                  <TextFlow maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="195.0" prefWidth="332.0">
+                  <TextFlow prefHeight="195.0" prefWidth="332.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <TextArea maxHeight="-Infinity" prefHeight="187.0" prefWidth="337.0" />
+                        <TextArea fx:id="theirs" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="187.0" prefWidth="248.0" />
                      </children>
                   </TextFlow>
                </children>
@@ -50,15 +49,15 @@
             <Label alignment="CENTER" prefHeight="17.0" prefWidth="1000.0" text="Result" VBox.vgrow="ALWAYS" />
             <TextFlow prefHeight="167.0" prefWidth="206.0">
                <children>
-                  <TextArea prefHeight="187.0" prefWidth="1000.0" />
+                  <TextArea fx:id="result" prefHeight="187.0" prefWidth="698.0" />
                </children>
             </TextFlow>
          </children>
       </VBox>
       <HBox alignment="CENTER" prefHeight="68.0" prefWidth="610.0" spacing="100.0" VBox.vgrow="ALWAYS">
          <children>
-            <Button alignment="CENTER" mnemonicParsing="false" prefHeight="25.0" prefWidth="84.0" text="Save" textAlignment="CENTER" />
-            <RadioButton lineSpacing="5.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="96.0" text="Delete File" />
+            <Button fx:id="save" alignment="CENTER" mnemonicParsing="false" onAction="#saveActionListener" prefHeight="25.0" prefWidth="84.0" text="Save" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+            <RadioButton fx:id="delete" lineSpacing="5.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="96.0" text="Delete File" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </children>
