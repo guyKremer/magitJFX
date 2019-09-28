@@ -191,6 +191,7 @@ public class HeaderController {
     @FXML
     public void mergeActionListener(ActionEvent actionEvent)throws FileNotFoundException,IOException,Exception{
         mainController.Merge();
+        mainController.ResetCommitTree();
     }
 
 
