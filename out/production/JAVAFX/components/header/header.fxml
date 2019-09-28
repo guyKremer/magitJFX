@@ -30,13 +30,18 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="608.0" VBox.vgrow="ALWAYS">
+        <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="37.0" prefWidth="605.0" VBox.vgrow="ALWAYS">
             <menus>
                 <Menu mnemonicParsing="false" text="Show Status" />
                 <Menu mnemonicParsing="false">
                <graphic>
-                  <Button fx:id="commit" mnemonicParsing="false" onAction="#commitActionListener" prefHeight="31.0" prefWidth="63.0" text="Commit" />
+                  <Button fx:id="commit" mnemonicParsing="false" onAction="#commitActionListener" prefHeight="12.0" prefWidth="68.0" text="Commit" />
                </graphic></Menu>
+            <Menu mnemonicParsing="false">
+               <graphic>
+                  <Button fx:id="clone" mnemonicParsing="false" onAction="#cloneActionListener" prefHeight="12.0" prefWidth="68.0" text="Clone" />
+               </graphic>
+            </Menu>
                 <Menu mnemonicParsing="false" text="Clone" />
                 <Menu mnemonicParsing="false" text="push" />
                 <Menu mnemonicParsing="false" text="pull" />

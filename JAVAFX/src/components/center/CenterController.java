@@ -247,7 +247,7 @@ public class CenterController {
         mainController.getEngineAdapter().createNewBranch(branchName, checkout);
     }
 
-    public void checkout(String branchName) {
+    public void checkout(String branchName) throws InterruptedException {
         mainController.getEngineAdapter().checkout(branchName);
     }
 
@@ -262,5 +262,9 @@ public class CenterController {
 
         };
         mainController.getEngineAdapter().Commit(message,commitConsumer);
+    }
+
+    public void Clone(){
+
     }
 }

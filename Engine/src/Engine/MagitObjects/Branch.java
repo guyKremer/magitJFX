@@ -78,4 +78,11 @@ public class Branch {
     }
 
 
+    public void SetName(String i_name) {
+        m_name = i_name;
+    }
+
+    public void SetPathToBranch(Path i_pathToBranch){
+        i_pathToBranch = m_pathToBranch;
+    }
 }

@@ -26,6 +26,10 @@ public abstract class FolderItem implements Comparable<FolderItem>{
         return m_path;
     }
 
+    public void setPath(Path i_path) {
+        this.m_path = i_path;
+    }
+
     public void SetUpdater(String m_updater) {
         this.m_updater = m_updater;
     }

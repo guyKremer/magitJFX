@@ -98,12 +98,12 @@ public class EngineAdapter {
     }
 
 
-    public void checkout(String branchName) {
+    public void checkout(String branchName) throws InterruptedException {
         currentRunningTask = new CheckoutTask(engine, branchName);
-        new Thread(currentRunningTask).start();
+        Thread t = new Thread(currentRunningTask);//.start();
+        t.start();
+        t.join();
     }
-
-
 
     public boolean checkChangesBeforeOperation() throws IOException {
         Boolean res = false;
@@ -140,7 +140,6 @@ public class EngineAdapter {
                 }
                 return conflicts;
             }
-
     }
 
     public Status showStatus()throws IOException{

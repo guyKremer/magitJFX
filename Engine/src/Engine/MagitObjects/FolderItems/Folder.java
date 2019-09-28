@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import Engine.Status;
@@ -265,5 +266,17 @@ public class Folder extends FolderItem{
             }
         }
         return res;
+    }
+
+    public void initFolderPaths(Path i_NewPathOfRepository) {
+        this.m_path = i_NewPathOfRepository;
+
+        for (FolderItem item : this.m_items) {
+            if (item.m_type.equals("folder")) {
+                Folder currentFolder = (Folder) item;
+                currentFolder.initFolderPaths(i_NewPathOfRepository.resolve(currentFolder.GetName()));
+            } else
+                item.setPath(i_NewPathOfRepository.resolve(item.GetName()));
+        }
     }
 }

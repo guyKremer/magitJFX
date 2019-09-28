@@ -149,6 +149,10 @@ public class AppController {
         }
     }
 
+    public void ResetCommitTree() throws IOException {
+        centerComponentController.ResetCommitsTree();
+    }
+
     private Hyperlink createHyperLink(Conflict i_conflict,Consumer<Conflict> conflictConsumer) {
         Hyperlink link = new Hyperlink();
         link.setText(i_conflict.getFilePath().toString());
@@ -207,8 +211,9 @@ public class AppController {
         centerComponentController.createNewBranch(branchName, checkout);
     }
 
-    public void checkout(String branchName) {
+    public void checkout(String branchName) throws IOException, InterruptedException {
         centerComponentController.checkout(branchName);
+        centerComponentController.ResetCommitsTree();
     }
 
     public void Commit(String message){

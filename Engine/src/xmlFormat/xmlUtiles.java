@@ -426,14 +426,14 @@ public class xmlUtiles {
 
         for (MagitSingleBranch msb : m_msbList) {
             currCommitSha1 = i_commitIdSha1.get(msb.getPointedCommit().getId());
-            if(msb.isRemote != null) {
+            if(msb.isRemote != null && msb.isRemote == true) {
                 currBranch = new RBranch(
                         Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
                         msb.getName(),
                         currCommitSha1
                 );
             }
-            else if(msb.tracking != null){
+            else if(msb.tracking != null && msb.tracking == true){
                 currBranch = new RTBranch(
                         Repository.m_pathToMagitDirectory.resolve("branches").resolve(msb.getName()),
                         currCommitSha1

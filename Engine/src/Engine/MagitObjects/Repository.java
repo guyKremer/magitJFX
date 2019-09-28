@@ -4,6 +4,7 @@ import Engine.Engine;
 import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.FolderItems.FolderItem;
 import Engine.Conflict;
+import com.sun.deploy.panel.IProperty;
 import org.apache.commons.io.FileUtils;
 import Engine.Status;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
@@ -27,6 +28,10 @@ public class Repository {
     private Set<Integer> m_conflictsSet;
     private Map<String,Commit> m_commitsMap = new HashMap<String, Commit>();
 
+    public void SetCommitsMap(Map<String, Commit> m_commitsMap) {
+        this.m_commitsMap = m_commitsMap;
+    }
+
     // getters
     public Map<String, Commit> GetCommitsMap() throws IOException {
         Commit commit;
@@ -35,6 +40,10 @@ public class Repository {
             commit = new Commit(entry.getValue().getCommitSha1());
             insertCommitsMapRec(commit);
         }
+        return m_commitsMap;
+    }
+
+    public Map<String, Commit> GetCommitsMapObj(){
         return m_commitsMap;
     }
 
@@ -81,7 +90,11 @@ public class Repository {
 
     //
 
-    public void SetCommitFromBranch(Branch i_branch,boolean flush)throws IOException{
+    public void SetBranches(Map<String, Branch> m_branches) {
+        this.m_branches = m_branches;
+    }
+
+    public void SetCommitFromBranch(Branch i_branch, boolean flush)throws IOException{
         loadCommitFromBranch(i_branch);
         if(flush){
             flushCommit();
@@ -526,5 +539,9 @@ public class Repository {
             }
         });
         return anf.traceAncestor(i_ourSha1,i_theirsSha1);
+    }
+
+    public void SetName(String repoName) {
+        m_name = repoName;
     }
 }
