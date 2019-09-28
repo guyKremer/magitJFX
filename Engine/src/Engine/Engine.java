@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
 import puk.team.course.magit.ancestor.finder.CommitRepresentative;
 import puk.team.course.magit.ancestor.finder.MappingFunctionFailureException;
+import sun.misc.resources.Messages_de;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -85,7 +86,12 @@ public class Engine {
         }
         else{
             List<String> lines = Files.readAllLines(Paths.get(i_pathToRepo).resolve(".magit").resolve("RepoName"));
-            m_currentRepository = new Repository(lines.get(0),i_pathToRepo, true);
+            if(lines.size() == 1) {
+                m_currentRepository = new Repository(lines.get(0), i_pathToRepo, true);
+            }
+            else{
+                m_currentRepository = new LocalRepository(lines.get(0), i_pathToRepo, true, lines.get(1), lines.get(2));
+            }
         }
     }
 
@@ -236,9 +242,17 @@ public class Engine {
         switchRepository(RR);
         Map<String,Branch> branches = m_currentRepository.GetBranches();
         Map<String,Commit> commitsMap = m_currentRepository.GetCommitsMap();
-        LocalRepository LR = new LocalRepository(repoName,i_LR.getAbsolutePath(),false);
+        LocalRepository LR = new LocalRepository(repoName,
+                i_LR.getAbsolutePath(),
+                false,
+                RR,
+                m_currentRepository.GetName());
+        //LR.setRemoteRepoName(m_currentRepository.GetName());
+        //LR.setRemoteRepoLocation(i_RR.getAbsolutePath());
         LR.SetCommitsMap(commitsMap);
         //LR.SetBranches(branches);
+
+        FileUtils.deleteQuietly(LR.GetPathToMagitDirectory().resolve("branches").resolve("master").toFile());
 
         initNewPaths(LR.GetRepositoryPath(), LR);
 
@@ -260,11 +274,14 @@ public class Engine {
         rtBranch = new RTBranch(LR.GetRepositoryPath().resolve(".magit").resolve("branches").
                 resolve(m_currentRepository.GetHeadBranch().getName()), m_currentRepository.GetHeadBranch().getCommitSha1());
 
-        LR.InsertBranch(rtBranch);
 
+        LR.InsertBranch(rtBranch);
+        LR.SetHeadBranch(m_currentRepository.GetHeadBranch());
         m_currentRepository = LR;
 
         checkOut(m_currentRepository.GetHeadBranch().getName());
+
+       // m_currentRepository.GetCommitsMap();
     }
 
     private void initNewPaths(Path i_NewPathOfRepository, Repository i_repo) throws IOException {
@@ -339,6 +356,8 @@ public class Engine {
 
             newRTBranch = new RTBranch(Repository.m_pathToMagitDirectory.resolve("branches").
                     resolve(branch.getName()), branch.getCommitSha1());
+
+            m_currentRepository.InsertBranch(newRTBranch);
 
             m_currentRepository.SetHeadBranch(newRTBranch);
 

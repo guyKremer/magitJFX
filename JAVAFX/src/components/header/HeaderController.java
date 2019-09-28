@@ -43,6 +43,7 @@ public class HeaderController {
     @FXML private Button commit;
     @FXML private Button clone;
     @FXML private Button fetch;
+    @FXML private Button pull;
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
@@ -146,7 +147,7 @@ public class HeaderController {
     }
 
     @FXML
-    public void commitActionListener(ActionEvent actionEvent){
+    public void commitActionListener(ActionEvent actionEvent) throws IOException, InterruptedException {
         String message =  showTextInputDialog("Commit","Commit", "Enter Commit Message");
         mainController.Commit(message);
     }
@@ -168,6 +169,22 @@ public class HeaderController {
     public void fetchActionListener(ActionEvent actionEvent) throws IOException {
         mainController.getEngineAdapter().getEngine().Fetch();
         mainController.ResetCommitTree();
+    }
+
+    @FXML
+    public void pullActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Pull();
+        mainController.ResetCommitTree();
+    }
+
+    @FXML
+    public void pushActionListener(ActionEvent actionEvent){
+
+    }
+
+    @FXML
+    public void showStatusActionListener(ActionEvent actionEvent){
+
     }
 
 

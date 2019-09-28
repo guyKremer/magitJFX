@@ -133,8 +133,10 @@ public class CenterController {
     }
 
     private void createCommits() throws IOException {
-        System.out.println(mainController.getEngineAdapter().getEngine().GetCurrentRepository());
-        mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetCommitsMap()
+        //System.out.println(mainController.getEngineAdapter().getEngine().GetCurrentRepository());
+        Map<String , Commit> commitsMap;
+        commitsMap = mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetCommitsMap();
+        commitsMap
                 .values()
                 .stream()
                 .forEach(commit ->
@@ -251,7 +253,7 @@ public class CenterController {
         mainController.getEngineAdapter().checkout(branchName);
     }
 
-    public void Commit(String message) {
+    public void Commit(String message) throws InterruptedException {
         Consumer<Commit> commitConsumer = commit -> {
             authorText.textProperty().set(commit.getCreator());
             dateText.textProperty().set(commit.getDateOfCreation());

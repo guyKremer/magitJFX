@@ -367,13 +367,15 @@ public class xmlUtiles {
 
         doesAllTrackingBranchesTrackAfterRemoteBranchThatIsRemote();
 
-        if(m_mr.magitRemoteReference == null || m_mr.magitRemoteReference == null) {
+        if(m_mr.magitRemoteReference == null || m_mr.magitRemoteReference.location == null || m_mr.magitRemoteReference.name == null) {
             m_repository = new Repository(m_mr.getName(), m_mr.getLocation(), false);
         }
         else{
-            m_repository = new LocalRepository(m_mr.getName(), m_mr.getLocation(), false);
-            ((LocalRepository) m_repository).setRemoteRepoLocation(m_mr.magitRemoteReference.location);
-            ((LocalRepository) m_repository).setRemoteRepoName(m_mr.magitRemoteReference.name);
+            m_repository = new LocalRepository(m_mr.getName(), m_mr.getLocation(), false,
+                    m_mr.magitRemoteReference.location,
+                    m_mr.magitRemoteReference.name);
+            //((LocalRepository) m_repository).setRemoteRepoLocation(m_mr.magitRemoteReference.location);
+            //((LocalRepository) m_repository).setRemoteRepoName(m_mr.magitRemoteReference.name);
         }
 
         Map<String, String> commitIdSha1 = new HashMap<String, String>(m_mscList.size());

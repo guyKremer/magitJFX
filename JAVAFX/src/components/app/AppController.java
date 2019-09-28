@@ -216,7 +216,8 @@ public class AppController {
         centerComponentController.ResetCommitsTree();
     }
 
-    public void Commit(String message){
+    public void Commit(String message) throws IOException, InterruptedException {
         centerComponentController.Commit(message);
+        ResetCommitTree();
     }
 }

@@ -43,7 +43,7 @@
                </graphic></Menu>
             <Menu mnemonicParsing="false">
                <graphic>
-                  <Button fx:id="clone" mnemonicParsing="false" onAction="#commitActionListener" prefHeight="12.0" prefWidth="68.0" text="Clone" />
+                  <Button fx:id="clone" mnemonicParsing="false" onAction="#cloneActionListener" prefHeight="12.0" prefWidth="68.0" text="Clone" />
                </graphic>
             </Menu>
             <Menu mnemonicParsing="false">

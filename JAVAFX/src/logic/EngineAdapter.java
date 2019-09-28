@@ -79,7 +79,7 @@ public class EngineAdapter {
                 append("Pointed Commit: ").append(i_branch.getCommitSha1());
         try{
             str.append(System.lineSeparator());
-            String commitMsg= i_branch.getCommitMsg();
+            String commitMsg= new Commit(i_branch.getCommitSha1()).getMessage();
             str.append("Commit Message: ").append(commitMsg);
             str.append(System.lineSeparator());
         }
@@ -166,8 +166,10 @@ public class EngineAdapter {
          */
     }
 
-    public void Commit(String message, Consumer<Commit> commitConsumer) {
+    public void Commit(String message, Consumer<Commit> commitConsumer) throws InterruptedException {
         currentRunningTask = new CommitTask(engine,message,commitConsumer);
-        new Thread(currentRunningTask).start();
+        Thread t = new Thread(currentRunningTask);//.start();
+        t.start();
+        t.join();
     }
 }

@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Repository {
-    private String m_name;
+    protected String m_name;
     public static Path m_repositoryPath=null;
     public static Path m_pathToMagitDirectory=null;
     public static SimpleDateFormat m_simpleDateFormat = null;
@@ -440,7 +440,7 @@ public class Repository {
         }
         else{
             SetHeadBranch(m_branches.get(i_newHeadBranch));
-            System.out.println(m_headBranch.getName());
+            //System.out.println(m_headBranch.getName());
             loadCommitFromBranch(m_headBranch);
             flushCommit();
         }
