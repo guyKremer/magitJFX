@@ -119,6 +119,8 @@ public class EngineAdapter {
     public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException{
             Map<Path,Conflict> conflicts = new HashMap<>();
             int fastMergeType = engine.needFastForwardMerge(theirsBranchName);
+            System.out.println("-------");
+            System.out.println(fastMergeType);
             if(fastMergeType == 1){
                  engine.forwardMerge(theirsBranchName);
                  commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());

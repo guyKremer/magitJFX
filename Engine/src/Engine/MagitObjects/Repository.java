@@ -116,7 +116,6 @@ public class Repository {
         res.add(0b101111);
         res.add(0b110011);
         res.add(0b110111);
-        res.add(0b111110);
         res.add(0b111111);
 
         return res;
@@ -479,13 +478,15 @@ public class Repository {
     public int needFastForwardMerge(Branch i_theirsBranch)throws FileNotFoundException,IOException {
         String oursSha1 = m_currentCommit.getSha1();
         String theirsSha1 = i_theirsBranch.getCommitSha1();
+        System.out.println(theirsSha1);
         String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
-
+        System.out.println(ncaSha1);
         if(ncaSha1.equals(oursSha1)){
             return 1;
 
         }
         else if (ncaSha1.equals(theirsSha1)){
+            System.out.println("fast");
             return 2;
         }
         else{
@@ -498,9 +499,11 @@ public class Repository {
    }
 
    private void switchCommit(String sha1)throws FileNotFoundException,IOException{
+        System.out.println(sha1);
        m_currentCommit = new Commit(sha1);
        m_currentCommit.flush();
        m_headBranch.setCommitSha1(m_currentCommit.getSha1());
+       m_headBranch.flushBranch();
    }
 
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{
