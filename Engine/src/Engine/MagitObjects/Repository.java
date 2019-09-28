@@ -127,6 +127,7 @@ public class Repository {
 
         res.add(0b011111);
         res.add(0b101111);
+        res.add(0b110011);
         res.add(0b110111);
         res.add(0b111110);
         res.add(0b111111);
@@ -431,6 +432,7 @@ public class Repository {
         }
         else{
             SetHeadBranch(m_branches.get(i_newHeadBranch));
+            System.out.println(m_headBranch.getName());
             loadCommitFromBranch(m_headBranch);
             flushCommit();
         }
@@ -459,14 +461,15 @@ public class Repository {
         String theirsSha1 = i_theirsBranch.getCommitSha1();
         String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
 
-        //end of fast forward merge check
         if(checkConflicts){
             new Commit(i_theirsBranch.getCommitSha1()).flushForMerge(new Commit(findAncestorSha1(m_currentCommit.getSha1(),i_theirsBranch.getCommitSha1())),m_currentCommit);
             conflicts =  checkConflicts (i_theirsBranch);
+
             if(conflicts.isEmpty()){
                 try {
                     createCommit("Merge branch "+i_theirsBranch.getName() +" into " + m_headBranch.getName());
                     m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
+                    m_currentCommit.flush();
                 }
                 catch(FileAlreadyExistsException e){
                     m_currentCommit.setSecondPrecedingSha1(i_theirsBranch.getCommitSha1());
