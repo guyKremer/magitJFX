@@ -292,16 +292,16 @@ public class Engine {
     }
 
     public void Fetch() throws IOException {
-        Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoLocation(),
-                ((LocalRepository)m_currentRepository).getRemoteRepoName(), true);
+        Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoName(),
+                ((LocalRepository)m_currentRepository).getRemoteRepoLocation(), true);
         Map<String, Branch> newBranches = new HashMap<>();
         Branch tempBranch;
 
         //build new branches to the LR
 
         for(Map.Entry<String,Branch> branch: RR.GetBranches().entrySet()){
-            if(m_currentRepository.GetBranches().containsKey(RR.GetName() + "/" + branch.getValue())){
-                newBranches.put(RR.GetName() + "/" + branch.getValue(),branch.getValue());
+            if(m_currentRepository.GetBranches().containsKey(RR.GetName() + "/" + branch.getKey())){
+                newBranches.put(RR.GetName() + "/" + branch.getKey(),branch.getValue());
             }
         }
 
