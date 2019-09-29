@@ -4,9 +4,11 @@ import Engine.Engine;
 import Engine.*;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import logic.tasks.*;
+import sun.awt.AWTAccessor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,9 +39,10 @@ public class EngineAdapter {
         t.join();
     }
 
-    public void CreateNewRepo(String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
-        currentRunningTask = new CreateNewRepoTask(engine, path ,repoName, repDetailsDelegate);
-        new Thread(currentRunningTask).start();
+    public void CreateNewRepo(Consumer<Throwable> throwableConsumer,String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
+        currentRunningTask = new CreateNewRepoTask(throwableConsumer,engine, path ,repoName, repDetailsDelegate);
+        Thread currentThread = new Thread(currentRunningTask);
+        currentThread.start();
     }
 
     public Engine getEngine() {

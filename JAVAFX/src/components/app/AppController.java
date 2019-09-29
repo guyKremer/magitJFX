@@ -6,6 +6,7 @@ import components.center.CenterController;
 import components.commons.ConflictComponentController;
 import components.header.HeaderController;
 import components.left.leftController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -48,13 +49,26 @@ public class AppController {
 
     private Stage primaryStage;
     private EngineAdapter engineAdapter;
+    private Consumer<Throwable> throwableConsumer = createThrowableConsumer();
 
+    private Consumer<Throwable> createThrowableConsumer () {
+        return (throwable) -> {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText(throwable.getMessage());
+                alert.showAndWait();
+            });
+        };
+    }
 
     @FXML
     public void initialize(){
         if(headerComponentController != null && centerComponentController!=null && leftComponentController !=null){
             headerComponentController.setMainController(this);
+            headerComponentController.setThrowableConsumer(throwableConsumer);
             centerComponentController.setMainController(this);
+            centerComponentController.setThrowableConsumer(throwableConsumer);
             leftComponentController.setMainController(this);
         }
         engineAdapter = new EngineAdapter();

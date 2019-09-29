@@ -3,8 +3,10 @@ package logic.tasks;
 import Engine.Engine;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.scene.control.Alert;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class CreateNewRepoTask extends Task<Boolean> {
 
@@ -12,8 +14,8 @@ public class CreateNewRepoTask extends Task<Boolean> {
     private BiConsumer<String,String> repDetailsDelegate;
     private String path;
     private String repoName;
-
-    public CreateNewRepoTask(Engine engine, String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
+    Consumer<Throwable> throwableConsumer;
+    public CreateNewRepoTask(Consumer<Throwable> throwableConsumer,Engine engine, String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
         this.engine = engine;
         this.path = path;
         this.repoName = repoName;
@@ -22,7 +24,7 @@ public class CreateNewRepoTask extends Task<Boolean> {
 
     @Override
     protected Boolean call() throws Exception {
-        engine.initializeRepository(path,repoName);
+        engine.initializeRepository(throwableConsumer,path,repoName);
 
         Platform.runLater(
                 () -> repDetailsDelegate.accept(engine.GetCurrentRepository().GetName(),

@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -40,7 +41,7 @@ public class Engine {
         return m_currentRepository;
     }
 
-    public void initializeRepository(String i_pathToRepo,String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
+    public void initializeRepository(Consumer<Throwable> throwableConsumer, String i_pathToRepo, String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
         Path path = Paths.get(i_pathToRepo);
 
         if(!Files.exists(path)){
@@ -50,6 +51,7 @@ public class Engine {
             m_currentRepository=new Repository(i_repoName,i_pathToRepo,false);
         }
         else{
+            throwableConsumer.accept(new FileAlreadyExistsException(i_pathToRepo + "  is already a repository "));
             throw new FileAlreadyExistsException(i_pathToRepo);
         }
     }

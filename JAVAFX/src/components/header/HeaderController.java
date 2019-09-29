@@ -26,6 +26,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class HeaderController {
 
@@ -43,6 +44,11 @@ public class HeaderController {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+    }
+    private Consumer<Throwable> throwableConsumer;
+
+    public void setThrowableConsumer(Consumer<Throwable> throwableConsumer) {
+        this.throwableConsumer = throwableConsumer;
     }
 
     @FXML

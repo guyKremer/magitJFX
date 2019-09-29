@@ -47,6 +47,11 @@ public class CenterController {
     @FXML private TextFlow deletedFiles;
 
     private AppController mainController;
+    private Consumer<Throwable> throwableConsumer;
+
+    public void setThrowableConsumer(Consumer<Throwable> throwableConsumer) {
+        this.throwableConsumer = throwableConsumer;
+    }
 
     public Text getAuthorText() {
         return authorText;
@@ -232,7 +237,7 @@ public class CenterController {
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);
         };
-        mainController.getEngineAdapter().CreateNewRepo(path,repName,biConsumer);
+        mainController.getEngineAdapter().CreateNewRepo(throwableConsumer,path,repName,biConsumer);
     }
 
     public void switchRepo(String path) throws IOException, InterruptedException {
