@@ -343,15 +343,52 @@ public class Engine {
         Path currRepoPath = Repository.m_repositoryPath;
         Path currMagitPath = Repository.m_pathToMagitDirectory;
 
+        Commit branchCommit1;
+        Commit branchCommit2 = null;
+
         Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoName(),
                 ((LocalRepository)m_currentRepository).getRemoteRepoLocation(), true);
-
-        Repository.m_pathToMagitDirectory = currMagitPath;
-        Repository.m_repositoryPath = currRepoPath;
 
         Branch branch;
         RTBranch newRTBranch;
         RBranch newRBranch;
+
+        RR.GetCommitsMap();
+
+        branchCommit1 = new Commit(RR.GetHeadBranch().getCommitSha1());
+
+
+        Repository.m_pathToMagitDirectory = currMagitPath;
+        Repository.m_repositoryPath = currRepoPath;
+
+        initNewPaths(m_currentRepository.GetRepositoryPath(), RR);
+
+        //update commits of the branch
+
+        while(((branchCommit1.getFirstPrecedingSha1() != null && !branchCommit1.getFirstPrecedingSha1().isEmpty()) ||
+                (branchCommit1.getSecondPrecedingSha1() != null && !branchCommit1.getSecondPrecedingSha1().isEmpty()))
+        ||(branchCommit2 != null && (
+                (branchCommit2.getFirstPrecedingSha1() != null && !branchCommit2.getFirstPrecedingSha1().isEmpty())||
+                        branchCommit2.getSecondPrecedingSha1() != null && !branchCommit2.getSecondPrecedingSha1().isEmpty()))){
+
+            if(branchCommit1.getFirstPrecedingSha1() != null && !branchCommit1.getFirstPrecedingSha1().isEmpty() ||
+            (branchCommit1.getSecondPrecedingSha1() != null && !branchCommit1.getSecondPrecedingSha1().isEmpty())) {
+                branchCommit1.getRootFolder().saveInObjects();
+                Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(branchCommit1.getSha1())
+                        , branchCommit1.toString());
+                branchCommit1 = RR.GetCommitsMapObj().get(branchCommit1.getFirstPrecedingSha1());
+                branchCommit2 = RR.GetCommitsMapObj().get(branchCommit1.getSecondPrecedingSha1());
+
+            }else if( branchCommit2 != null &&
+                    (branchCommit2.getFirstPrecedingSha1() != null && !branchCommit2.getFirstPrecedingSha1().isEmpty())||
+                    branchCommit2.getSecondPrecedingSha1() != null && !branchCommit2.getSecondPrecedingSha1().isEmpty()){
+                branchCommit2.getRootFolder().saveInObjects();
+                Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(branchCommit2.getSha1())
+                        , branchCommit2.toString());
+                branchCommit1 = RR.GetCommitsMapObj().get(branchCommit2.getFirstPrecedingSha1());
+                branchCommit2 = RR.GetCommitsMapObj().get(branchCommit2.getSecondPrecedingSha1());
+            }
+        }
 
         if(m_currentRepository.GetHeadBranch() instanceof RTBranch){
             //CHECK IF NEED PUSH BEFORE
