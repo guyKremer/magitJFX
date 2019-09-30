@@ -41,7 +41,7 @@ public class Engine {
         return m_currentRepository;
     }
 
-    public void initializeRepository(Consumer<Throwable> throwableConsumer, String i_pathToRepo, String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
+    public void initializeRepository(String i_pathToRepo, String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
         Path path = Paths.get(i_pathToRepo);
 
         if(!Files.exists(path)){
@@ -51,8 +51,7 @@ public class Engine {
             m_currentRepository=new Repository(i_repoName,i_pathToRepo,false);
         }
         else{
-            throwableConsumer.accept(new FileAlreadyExistsException(i_pathToRepo + "  is already a repository "));
-            throw new FileAlreadyExistsException(i_pathToRepo);
+            throw new FileAlreadyExistsException(i_pathToRepo + " is already a repository ");
         }
     }
 
@@ -102,7 +101,7 @@ public class Engine {
         m_currentRepository.checkOut(i_newHeadBranch);
     }
 
-    public void resetBranchSha1(String i_branchName, String i_sha1)throws FileNotFoundException,IOException {
+    public void ranchSha1(String i_branchName, String i_sha1)throws FileNotFoundException,IOException {
         isRepositoryInitialized();
         m_currentRepository.resetBranchSha1(i_branchName,i_sha1);
     }
@@ -122,10 +121,13 @@ public class Engine {
     }
 
     public int needFastForwardMerge(String theirsBranchName)throws FileNotFoundException,IOException {
+        isRepositoryInitialized();
         return m_currentRepository.needFastForwardMerge(m_currentRepository.GetBranch(theirsBranchName));
     }
 
     public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
+        isRepositoryInitialized();
+        isOpenChanges();
         m_currentRepository.forwardMerge(theirsBranchName);
     }
 
@@ -208,10 +210,21 @@ public class Engine {
 
     public void AddBranch(String i_branchName,boolean i_checkout)throws FileAlreadyExistsException,IOException{
         isRepositoryInitialized();
+        isOpenChanges();
         m_currentRepository.AddBranch(i_branchName,i_checkout);
     }
 
+    private void isOpenChanges() throws FileNotFoundException,IOException{
+        Status status = showStatus();
+        if (!status.getModifiedFiles().isEmpty() || !status.getAddedFiles().isEmpty()
+                || !status.getDeletedFiles().isEmpty()){
+            throw new FileNotFoundException("Cant perform action because You have open changes");
+        }
+    }
+
     public Map<Path,Conflict> Merge(String i_theirs,boolean checkConflicts)throws FileNotFoundException,IOException{
+        isRepositoryInitialized();
+        isOpenChanges();
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
 
         //if branch exists

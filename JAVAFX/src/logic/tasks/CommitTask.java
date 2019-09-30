@@ -5,6 +5,7 @@ import Engine.MagitObjects.Commit;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import logic.EngineAdapter;
 
 import javax.imageio.IIOException;
 import java.lang.invoke.ConstantCallSite;
@@ -21,6 +22,9 @@ public class CommitTask extends Task<Boolean> {
         this.engine = engine;
         this.message = message;
         this.commitConsumer = commitConsumer;
+        setOnFailed(event -> {
+            EngineAdapter.throwableConsumer.accept(getException());
+        });
     }
     @Override
     protected Boolean call() throws FileAlreadyExistsException,java.io.IOException {

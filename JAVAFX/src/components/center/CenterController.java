@@ -138,7 +138,6 @@ public class CenterController {
     }
 
     private void createCommits() throws IOException {
-        System.out.println(mainController.getEngineAdapter().getEngine().GetCurrentRepository());
         mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetCommitsMap()
                 .values()
                 .stream()
@@ -237,7 +236,7 @@ public class CenterController {
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);
         };
-        mainController.getEngineAdapter().CreateNewRepo(throwableConsumer,path,repName,biConsumer);
+        mainController.getEngineAdapter().CreateNewRepo(path,repName,biConsumer);
     }
 
     public void switchRepo(String path) throws IOException, InterruptedException {

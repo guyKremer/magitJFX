@@ -2,14 +2,17 @@ package components;
 
 import components.app.AppController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 
 import java.net.URL;
+import java.util.function.Consumer;
 
 import static javafx.application.Application.launch;
 

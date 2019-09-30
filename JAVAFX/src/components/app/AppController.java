@@ -49,26 +49,13 @@ public class AppController {
 
     private Stage primaryStage;
     private EngineAdapter engineAdapter;
-    private Consumer<Throwable> throwableConsumer = createThrowableConsumer();
 
-    private Consumer<Throwable> createThrowableConsumer () {
-        return (throwable) -> {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Error");
-                alert.setContentText(throwable.getMessage());
-                alert.showAndWait();
-            });
-        };
-    }
 
     @FXML
     public void initialize(){
         if(headerComponentController != null && centerComponentController!=null && leftComponentController !=null){
             headerComponentController.setMainController(this);
-            headerComponentController.setThrowableConsumer(throwableConsumer);
             centerComponentController.setMainController(this);
-            centerComponentController.setThrowableConsumer(throwableConsumer);
             leftComponentController.setMainController(this);
         }
         engineAdapter = new EngineAdapter();
@@ -100,15 +87,6 @@ public class AppController {
     }
 
     public void Merge()throws FileNotFoundException,IOException,Exception{
-        if (engineAdapter.isOpenChanges()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Open Changes");
-            alert.setHeaderText("Cant merge");
-            alert.setContentText("You have uncommitted changes,please change them first");
-
-            alert.showAndWait();
-            return;
-        }
         Map<Path,Conflict> conflicts;
         String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
         Button mergeButton = new Button("Merge");

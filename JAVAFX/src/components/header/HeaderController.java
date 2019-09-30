@@ -107,18 +107,9 @@ public class HeaderController {
 
     @FXML
     public void showAllBranchesActiveListener(ActionEvent actionEvent) throws IOException {
-        String allBranches;
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        mainController.getEngineAdapter().showAllBranches();
 
-        alert.setTitle("Repository Branches");
-        alert.setHeaderText("Repository Branches");
-
-        allBranches = mainController.getEngineAdapter().showAllBranches();
-        alert.setContentText(allBranches);
-        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
-
-        alert.showAndWait();
     }
 
     @FXML
@@ -128,12 +119,6 @@ public class HeaderController {
 
         branchName = showTextInputDialog("New Branch","New Branch", "Enter new Branch Name");
         checkout = showConfirmationDialog("Checkout", "Checkout Branch","Checkout to new branch");
-
-        if(mainController.getEngineAdapter().checkChangesBeforeOperation()) {
-            discardChanges = showConfirmationDialog("Confirm discard changes", "You have changes" ,
-                    "You have open changes, if you continue this operation all uncomitted changes will be lost");
-
-        }
 
         mainController.createNewBranch(branchName, checkout);
     }
