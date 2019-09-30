@@ -48,6 +48,15 @@ public class CenterController {
 
     private AppController mainController;
     private Consumer<Throwable> throwableConsumer;
+    private Consumer<Commit> commitConsumer = commit -> {
+        authorText.textProperty().set(commit.getCreator());
+        dateText.textProperty().set(commit.getDateOfCreation());
+        commitSha1Text.textProperty().set(commit.getSha1());
+        parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
+        parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
+        commitMsg.textProperty().set(commit.getMessage());
+
+    };
 
     public void setThrowableConsumer(Consumer<Throwable> throwableConsumer) {
         this.throwableConsumer = throwableConsumer;
@@ -244,7 +253,7 @@ public class CenterController {
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);
         };
-        mainController.getEngineAdapter().SwitchRepo(path,biConsumer);
+        mainController.getEngineAdapter().SwitchRepo(path,biConsumer,commitConsumer);
     }
 
     public void createNewBranch(String branchName, boolean checkout) {
@@ -252,19 +261,10 @@ public class CenterController {
     }
 
     public void checkout(String branchName) {
-        mainController.getEngineAdapter().checkout(branchName);
+        mainController.getEngineAdapter().checkout(branchName,commitConsumer);
     }
 
     public void Commit(String message) {
-        Consumer<Commit> commitConsumer = commit -> {
-            authorText.textProperty().set(commit.getCreator());
-            dateText.textProperty().set(commit.getDateOfCreation());
-            commitSha1Text.textProperty().set(commit.getSha1());
-            parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
-            parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
-            commitMsg.textProperty().set(commit.getMessage());
-
-        };
         mainController.getEngineAdapter().Commit(message,commitConsumer);
     }
 }

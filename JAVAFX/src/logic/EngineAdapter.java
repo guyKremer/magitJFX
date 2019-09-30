@@ -64,8 +64,8 @@ public class EngineAdapter {
     public Engine getEngine() {
         return engine;
     }
-    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate) throws InterruptedException {
-        currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate);
+    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate,Consumer<Commit> commitConsumer) throws InterruptedException {
+        currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate,commitConsumer);
         Thread t = new Thread(currentRunningTask);
         t.start();
         t.join();
@@ -128,8 +128,8 @@ public class EngineAdapter {
     }
 
 
-    public void checkout(String branchName) {
-        currentRunningTask = new CheckoutTask(engine, branchName);
+    public void checkout(String branchName,Consumer<Commit>commitConsumer) {
+        currentRunningTask = new CheckoutTask(engine, branchName,commitConsumer);
         new Thread(currentRunningTask).start();
     }
 

@@ -117,20 +117,28 @@ public class Engine {
     }
 
     public Branch GetHeadBranch() {
+        isRepositoryInitialized();
         return m_currentRepository.GetHeadBranch();
     }
 
     public int needFastForwardMerge(String theirsBranchName)throws FileNotFoundException,IOException {
         isRepositoryInitialized();
+        Branch theirsBranch = m_currentRepository.GetBranch(theirsBranchName);
+        if(theirsBranch==null){
+            throw new FileNotFoundException(theirsBranchName+ " isn't a branch");
+        }
         return m_currentRepository.needFastForwardMerge(m_currentRepository.GetBranch(theirsBranchName));
     }
 
     public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
         isRepositoryInitialized();
         isOpenChanges();
+        Branch theirsBranch = m_currentRepository.GetBranch(theirsBranchName);
+        if(theirsBranch==null){
+            throw new FileNotFoundException(theirsBranchName+ " isn't a branch");
+        }
         m_currentRepository.forwardMerge(theirsBranchName);
     }
-
 
     public static class Utils{
         public static void zipToFile(Path i_pathToZippedFile, String i_fileContent) throws IOException{
@@ -232,7 +240,7 @@ public class Engine {
             return  m_currentRepository.Merge(theirsBranch,checkConflicts);
         }
         else{
-            throw new FileNotFoundException(i_theirs + " doesn't exist");
+            throw new FileNotFoundException(i_theirs+ " isn't a branch");
         }
     }
 
