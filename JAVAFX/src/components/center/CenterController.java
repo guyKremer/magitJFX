@@ -171,8 +171,14 @@ public class CenterController {
         if(!i_commit.getFirstPrecedingSha1().isEmpty()) {
             parent1Sha1Text.setText(i_commit.getFirstPrecedingSha1());
         }
+        else{
+            parent1Sha1Text.setText("");
+        }
         if(!i_commit.getSecondPrecedingSha1().isEmpty()){
             parent2Sha1Text.setText(i_commit.getSecondPrecedingSha1());
+        }
+        else{
+            parent2Sha1Text.setText("");
         }
 
         commitMsg.setText(i_commit.getMessage());
