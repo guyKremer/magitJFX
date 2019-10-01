@@ -113,9 +113,9 @@ public class Engine {
         m_currentRepository.checkOut(i_newHeadBranch);
     }
 
-    public void ranchSha1(String i_branchName, String i_sha1)throws FileNotFoundException,IOException {
+    public void resetBranchSha1(String i_sha1)throws FileNotFoundException,IOException {
         isRepositoryInitialized();
-        m_currentRepository.resetBranchSha1(i_branchName,i_sha1);
+        m_currentRepository.resetBranchSha1(m_currentRepository.GetHeadBranch().getName(),i_sha1);
     }
 
     public void setCurrentRepository(Repository repo){

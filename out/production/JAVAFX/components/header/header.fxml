@@ -23,7 +23,7 @@
                         <MenuItem fx:id="showAllBranches" mnemonicParsing="false" onAction="#showAllBranchesActiveListener" text="Show All Branches" />
                         <MenuItem fx:id="createNewBranch" mnemonicParsing="false" onAction="#createNewBranchActionListener" text="Create New Branch" />
                         <MenuItem fx:id="checkout" mnemonicParsing="false" onAction="#checkoutActionListener" text="Checkout" />
-                        <MenuItem mnemonicParsing="false" text="Reset Branch" />
+                        <MenuItem fx:id="resetBranch" mnemonicParsing="false" onAction="#resetBranchActionListener" text="Reset Branch" />
                         <MenuItem fx:id="merge" mnemonicParsing="false" onAction="#mergeActionListener" text="Merge" />
                     </items>
                 </Menu>

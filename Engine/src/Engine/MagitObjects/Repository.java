@@ -463,6 +463,8 @@ public class Repository {
             branch.setCommitSha1(i_sha1);
             branch.flushBranch();
             m_branches.put(i_branchName,branch);
+            m_currentCommit = new Commit(i_sha1);
+            flushCommit();
         }
     }
 
@@ -525,7 +527,7 @@ public class Repository {
 
    private void switchCommit(String sha1)throws FileNotFoundException,IOException{
        m_currentCommit = new Commit(sha1);
-       m_currentCommit.flush();
+       flushCommit();
        m_headBranch.setCommitSha1(m_currentCommit.getSha1());
        m_headBranch.flushBranch();
    }
