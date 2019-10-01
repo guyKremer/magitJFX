@@ -422,4 +422,103 @@ public class Engine {
         }
 
     }
+
+    public void Push() throws IOException {
+
+        m_currentRepository.GetCommitsMap();
+
+        Path currMagitPath = Repository.m_pathToMagitDirectory;
+        Path currRepoPath = Repository.m_repositoryPath;
+        boolean flag = false;
+
+        Repository RR = new Repository(((LocalRepository)m_currentRepository).getRemoteRepoName(),
+                ((LocalRepository)m_currentRepository).getRemoteRepoLocation(), true);
+
+        Path RRpath = RR.GetRepositoryPath();
+        Path RRMagit = Repository.m_pathToMagitDirectory;
+
+        RR.GetCommitsMap();
+
+        Repository.m_pathToMagitDirectory = currMagitPath;
+        Repository.m_repositoryPath = currRepoPath;
+
+
+        Commit branchCommit1;
+        Commit branchCommit2 = null;
+
+        Branch branch;
+        RTBranch newRTBranch;
+        Branch newBranch;
+
+        initNewPaths(RRpath, m_currentRepository);
+
+        branchCommit1 = new Commit(m_currentRepository.GetHeadBranch().getCommitSha1());
+
+
+        //Repository.m_pathToMagitDirectory = currMagitPath;
+        //Repository.m_repositoryPath = currRepoPath;
+
+        //initNewPaths(m_currentRepository.GetRepositoryPath(), RR);
+
+        //update commits of the branch
+
+        Repository.m_repositoryPath = RRpath;
+        Repository.m_pathToMagitDirectory = RRMagit;
+
+        while(((branchCommit1.getFirstPrecedingSha1() != null && !branchCommit1.getFirstPrecedingSha1().isEmpty()) ||
+                (branchCommit1.getSecondPrecedingSha1() != null && !branchCommit1.getSecondPrecedingSha1().isEmpty()))
+                ||(branchCommit2 != null && (
+                (branchCommit2.getFirstPrecedingSha1() != null && !branchCommit2.getFirstPrecedingSha1().isEmpty())||
+                        branchCommit2.getSecondPrecedingSha1() != null && !branchCommit2.getSecondPrecedingSha1().isEmpty()))){
+
+            if(branchCommit1.getFirstPrecedingSha1() != null && !branchCommit1.getFirstPrecedingSha1().isEmpty() ||
+                    (branchCommit1.getSecondPrecedingSha1() != null && !branchCommit1.getSecondPrecedingSha1().isEmpty())) {
+                branchCommit1.getRootFolder().saveInObjects();
+                Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(branchCommit1.getSha1())
+                        , branchCommit1.toString());
+                branchCommit1 = RR.GetCommitsMapObj().get(branchCommit1.getFirstPrecedingSha1());
+                branchCommit2 = RR.GetCommitsMapObj().get(branchCommit1.getSecondPrecedingSha1());
+
+            }else if( branchCommit2 != null &&
+                    (branchCommit2.getFirstPrecedingSha1() != null && !branchCommit2.getFirstPrecedingSha1().isEmpty())||
+                    branchCommit2.getSecondPrecedingSha1() != null && !branchCommit2.getSecondPrecedingSha1().isEmpty()){
+                branchCommit2.getRootFolder().saveInObjects();
+                Engine.Utils.zipToFile(Repository.m_pathToMagitDirectory.resolve("objects").resolve(branchCommit2.getSha1())
+                        , branchCommit2.toString());
+                branchCommit1 = RR.GetCommitsMapObj().get(branchCommit2.getFirstPrecedingSha1());
+                branchCommit2 = RR.GetCommitsMapObj().get(branchCommit2.getSecondPrecedingSha1());
+            }
+        }
+
+        //if(m_currentRepository.GetHeadBranch() instanceof RTBranch){
+            //VALIDATION CHECK
+
+            branch = RR.GetBranches().get(m_currentRepository.GetHeadBranch().getName());
+            if(RR.GetHeadBranch().getName() == m_currentRepository.GetHeadBranch().getName()) {
+                flag = true;
+            }
+            RR.GetBranches().remove(branch.getName());
+
+            // update RB in RR
+
+
+            RR.GetBranches().remove(branch.getName());
+
+            newBranch = new Branch(Repository.m_pathToMagitDirectory.resolve("branches").
+                        resolve(branch.getName()), branch.getCommitSha1());
+
+            RR.InsertBranch(newBranch);
+            if(flag) {
+                    RR.SetHeadBranch(newBranch);
+            }
+
+            //checkOut(m_currentRepository.GetHeadBranch().getName());
+
+            //RR.GetCommitsMap();
+
+            //initNewPaths(m_currentRepository.GetRepositoryPath(), m_currentRepository);
+        //}
+
+    }
+
 }

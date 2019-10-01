@@ -178,8 +178,8 @@ public class HeaderController {
     }
 
     @FXML
-    public void pushActionListener(ActionEvent actionEvent){
-
+    public void pushActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Push();
     }
 
     @FXML
