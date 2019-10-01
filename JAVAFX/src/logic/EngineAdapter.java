@@ -4,13 +4,18 @@ import Engine.Engine;
 import Engine.*;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.Region;
 import logic.tasks.*;
+import org.apache.commons.io.FileUtils;
+import sun.awt.AWTAccessor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -24,6 +29,19 @@ public class EngineAdapter {
     private Engine engine = new Engine();
 
     private Task<Boolean> currentRunningTask;
+    public static Consumer<Throwable> throwableConsumer = createThrowableConsumer();
+
+
+    private static Consumer<Throwable> createThrowableConsumer () {
+        return (throwable) -> {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText(throwable.getMessage());
+                alert.showAndWait();
+            });
+        };
+    }
 
     public void ChangeUserName(String name, Consumer<String> inputDelegate){
         currentRunningTask = new ChangeUserNameTask(engine, name, inputDelegate);
@@ -39,23 +57,35 @@ public class EngineAdapter {
 
     public void CreateNewRepo(String path,String repoName, BiConsumer<String, String> repDetailsDelegate) {
         currentRunningTask = new CreateNewRepoTask(engine, path ,repoName, repDetailsDelegate);
-        new Thread(currentRunningTask).start();
+        Thread currentThread = new Thread(currentRunningTask);
+        currentThread.start();
     }
 
     public Engine getEngine() {
         return engine;
     }
-    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate) throws InterruptedException {
-        currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate);
-        Thread t = new Thread(currentRunningTask);//.start();
+    public void SwitchRepo(String path, BiConsumer<String, String> repDetailsDelegate,Consumer<Commit> commitConsumer) throws InterruptedException {
+        currentRunningTask = new SwitchRepoTask(engine, path, repDetailsDelegate,commitConsumer);
+        Thread t = new Thread(currentRunningTask);
         t.start();
         t.join();
     }
 
-    public String showAllBranches() throws IOException {
-        Map<String, Branch> branches = engine.GetRepoBranches();
-        String str = getBranchesDetails(branches);
-        return str;
+    public void showAllBranches() throws IOException {
+        try{
+            Map<String, Branch> branches = engine.GetRepoBranches();
+            String str = getBranchesDetails(branches);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+            alert.setTitle("Repository Branches");
+            alert.setHeaderText("Repository Branches");
+            alert.setContentText(str);
+            alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+            alert.showAndWait();
+        }
+        catch (Exception e){
+            throwableConsumer.accept(e);
+        }
     }
 
     private String getBranchesDetails(Map<String, Branch> i_repoBranches) throws IOException {
@@ -94,7 +124,7 @@ public class EngineAdapter {
 
     public void createNewBranch(String branchName, boolean checkout) {
         currentRunningTask = new CreateNewBranchTask(engine, branchName, checkout);
-        currentRunningTask.run();
+        new Thread(currentRunningTask).start();
     }
 
 
@@ -115,6 +145,13 @@ public class EngineAdapter {
 
         return res;
     }
+    public void checkout(String branchName,Consumer<Commit>commitConsumer) {
+        currentRunningTask = new CheckoutTask(engine, branchName,commitConsumer);
+        Thread t = new Thread(currentRunningTask);//.start();
+        t.start();
+        t.join();
+    }
+
 
     public Map<Path,Conflict> Merge (String theirsBranchName,Consumer<Commit> commitConsumer,boolean checkConflicts)throws FileAlreadyExistsException , IOException{
             Map<Path,Conflict> conflicts = new HashMap<>();
@@ -142,34 +179,24 @@ public class EngineAdapter {
             }
     }
 
-    public Status showStatus()throws IOException{
-        return engine.showStatus();
-    }
-    public boolean isOpenChanges()throws IOException{
-        Status status = showStatus();
-        if (!status.getModifiedFiles().isEmpty() || !status.getAddedFiles().isEmpty()
-                || !status.getDeletedFiles().isEmpty()){
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    public Map<Path,Conflict> CheckConflicts(String branchName)throws FileNotFoundException,IOException {
-        return engine.CheckConflicts(branchName);
-        /*
-         Task<Map<Path,Conflict>> tempTask = new CheckConflictsTask(engine,branchName);
 
-        Map<Path,Conflict> temp = tempTask.run().;
-       // new Thread(currentRunningTask).start();
-
-         */
+    public void Commit(String message, Consumer<Commit> commitConsumer,Consumer<Status> statusConsumer) {
+        currentRunningTask = new CommitTask(engine,message,commitConsumer,statusConsumer);
+        Thread t = new Thread(currentRunningTask);
+        t.start();
+        t.join();
     }
-
+    /*
     public void Commit(String message, Consumer<Commit> commitConsumer) throws InterruptedException {
         currentRunningTask = new CommitTask(engine,message,commitConsumer);
         Thread t = new Thread(currentRunningTask);//.start();
         t.start();
         t.join();
+    }
+    */
+
+    public void ShowStatus(Commit commit,Consumer<Status> statusConsumer,String prevCommitSha1){
+        currentRunningTask = new ShowStatusTask(engine,statusConsumer,commit,prevCommitSha1);
+        new Thread(currentRunningTask).start();
     }
 }

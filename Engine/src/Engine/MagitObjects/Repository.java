@@ -129,7 +129,6 @@ public class Repository {
         res.add(0b101111);
         res.add(0b110011);
         res.add(0b110111);
-        res.add(0b111110);
         res.add(0b111111);
 
         return res;
@@ -197,6 +196,10 @@ public class Repository {
             res.loadFolder();
         }
         return res;
+    }
+
+    public void setCurrentCommit(Commit currentCommit) {
+        this.m_currentCommit = currentCommit;
     }
 
     public void createCommit(String i_message)throws FileAlreadyExistsException,java.io.IOException {
@@ -498,10 +501,12 @@ public class Repository {
     }
 
     public int needFastForwardMerge(Branch i_theirsBranch)throws FileNotFoundException,IOException {
+        if(!isFirstCommitExist()){
+            throw new NullPointerException("Nothing was commited");
+        }
         String oursSha1 = m_currentCommit.getSha1();
         String theirsSha1 = i_theirsBranch.getCommitSha1();
         String ncaSha1 = findAncestorSha1(oursSha1,theirsSha1);
-
         if(ncaSha1.equals(oursSha1)){
             return 1;
 
@@ -522,6 +527,7 @@ public class Repository {
        m_currentCommit = new Commit(sha1);
        m_currentCommit.flush();
        m_headBranch.setCommitSha1(m_currentCommit.getSha1());
+       m_headBranch.flushBranch();
    }
 
     public Map<Path,Conflict> checkConflicts(Branch i_theirsBranch) throws FileNotFoundException,IOException{

@@ -1,6 +1,10 @@
 package Engine;
 
 import Engine.MagitObjects.*;
+import Engine.MagitObjects.Branch;
+import Engine.MagitObjects.Commit;
+import Engine.MagitObjects.FolderItems.Folder;
+import Engine.MagitObjects.Repository;
 
 import org.apache.commons.io.FileUtils;
 import puk.team.course.magit.ancestor.finder.AncestorFinder;
@@ -18,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -40,7 +45,7 @@ public class Engine {
         return m_currentRepository;
     }
 
-    public void initializeRepository(String i_pathToRepo,String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
+    public void initializeRepository(String i_pathToRepo, String i_repoName)throws FileAlreadyExistsException,java.io.IOException{
         Path path = Paths.get(i_pathToRepo);
 
         if(!Files.exists(path)){
@@ -50,7 +55,7 @@ public class Engine {
             m_currentRepository=new Repository(i_repoName,i_pathToRepo,false);
         }
         else{
-            throw new FileAlreadyExistsException(i_pathToRepo);
+            throw new FileAlreadyExistsException(i_pathToRepo + " is already a repository ");
         }
     }
 
@@ -65,6 +70,9 @@ public class Engine {
 
     public Status showStatus()throws java.io.IOException{
         isRepositoryInitialized();
+        if(!isFirstCommitExist()){
+            throw new FileNotFoundException("Cant show status because  nothing was committed");
+        }
         Map<String,List<String>> changesMap = m_currentRepository.checkChanges();
         Status res;
         res = new Status(m_currentRepository.m_repositoryPath.toString(),m_currentRepository.GetName(), m_user,
@@ -105,7 +113,7 @@ public class Engine {
         m_currentRepository.checkOut(i_newHeadBranch);
     }
 
-    public void resetBranchSha1(String i_branchName, String i_sha1)throws FileNotFoundException,IOException {
+    public void ranchSha1(String i_branchName, String i_sha1)throws FileNotFoundException,IOException {
         isRepositoryInitialized();
         m_currentRepository.resetBranchSha1(i_branchName,i_sha1);
     }
@@ -121,17 +129,47 @@ public class Engine {
     }
 
     public Branch GetHeadBranch() {
+        isRepositoryInitialized();
         return m_currentRepository.GetHeadBranch();
     }
 
     public int needFastForwardMerge(String theirsBranchName)throws FileNotFoundException,IOException {
+        isRepositoryInitialized();
+        Branch theirsBranch = m_currentRepository.GetBranch(theirsBranchName);
+        if(theirsBranch==null){
+            throw new FileNotFoundException(theirsBranchName+ " isn't a branch");
+        }
         return m_currentRepository.needFastForwardMerge(m_currentRepository.GetBranch(theirsBranchName));
     }
 
     public void forwardMerge(String theirsBranchName)throws FileNotFoundException,IOException{
+        isRepositoryInitialized();
+        isOpenChanges();
+        Branch theirsBranch = m_currentRepository.GetBranch(theirsBranchName);
+        if(theirsBranch==null){
+            throw new FileNotFoundException(theirsBranchName+ " isn't a branch");
+        }
         m_currentRepository.forwardMerge(theirsBranchName);
     }
 
+    public Status showStatusAgainstOtherCommits(Commit commit, String prevCommitSha1)throws IOException {
+        isRepositoryInitialized();
+        Commit originalCommit = m_currentRepository.GeCurrentCommit();
+        Folder originalWc = m_currentRepository.loadWC();
+        Status status=new Status(m_currentRepository.m_repositoryPath.toString(),m_currentRepository.GetName(),m_user,null,null,null,null);
+
+        if(prevCommitSha1!=null && !prevCommitSha1.isEmpty()){
+            m_currentRepository.clearWc();
+            Commit prevCommit = new Commit(prevCommitSha1);
+            m_currentRepository.setCurrentCommit(prevCommit);
+            originalCommit.flush();
+            status = showStatus();
+        }
+        m_currentRepository.setCurrentCommit(originalCommit);
+        m_currentRepository.clearWc();
+        originalWc.flushToWc();
+        return status;
+    }
 
     public static class Utils{
         public static void zipToFile(Path i_pathToZippedFile, String i_fileContent) throws IOException{
@@ -210,10 +248,21 @@ public class Engine {
 
     public void AddBranch(String i_branchName,boolean i_checkout)throws FileAlreadyExistsException,IOException{
         isRepositoryInitialized();
+        isOpenChanges();
         m_currentRepository.AddBranch(i_branchName,i_checkout);
     }
 
+    private void isOpenChanges() throws FileNotFoundException,IOException{
+        Status status = showStatus();
+        if (!status.getModifiedFiles().isEmpty() || !status.getAddedFiles().isEmpty()
+                || !status.getDeletedFiles().isEmpty()){
+            throw new FileNotFoundException("Cant perform action because You have open changes");
+        }
+    }
+
     public Map<Path,Conflict> Merge(String i_theirs,boolean checkConflicts)throws FileNotFoundException,IOException{
+        isRepositoryInitialized();
+        isOpenChanges();
         Branch theirsBranch =  m_currentRepository.GetBranch(i_theirs);
 
         //if branch exists
@@ -221,7 +270,7 @@ public class Engine {
             return  m_currentRepository.Merge(theirsBranch,checkConflicts);
         }
         else{
-            throw new FileNotFoundException(i_theirs + " doesn't exist");
+            throw new FileNotFoundException(i_theirs+ " isn't a branch");
         }
     }
 

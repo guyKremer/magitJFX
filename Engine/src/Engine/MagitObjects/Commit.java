@@ -287,7 +287,6 @@ public class Commit implements CommitRepresentative {
             if(entry.getKey().equals(m_rootFolder.getPath())||m_rootFolder.GetItem(entry.getValue()).GetType().equals("folder")){
                 continue;
             }
-            System.out.println(entry.getKey());
             conflictRep = calculateConflictRep(entry.getKey(),ncaPathToSha1Map,oursPathToSha1Map,theirsPathToSha1Map);
 
             if(conflictsSet.contains(conflictRep)){
