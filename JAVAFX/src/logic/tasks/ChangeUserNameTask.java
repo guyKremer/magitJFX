@@ -3,6 +3,7 @@ package logic.tasks;
 import Engine.Engine;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import logic.EngineAdapter;
 
 import java.util.function.Consumer;
 
@@ -16,7 +17,9 @@ public class ChangeUserNameTask extends Task<Boolean> {
         this.engine = engine;
         this.name = name;
         this.inputDelegate = inputDelegate;
-
+        setOnFailed(event -> {
+            EngineAdapter.throwableConsumer.accept(getException());
+        });
     }
 
     @Override

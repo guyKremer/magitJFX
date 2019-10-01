@@ -1,5 +1,6 @@
 package components.header;
 
+import Engine.Status;
 import components.CommonResourcesPaths;
 import components.app.AppController;
 import components.center.CenterController;
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class HeaderController {
 
@@ -47,6 +49,11 @@ public class HeaderController {
 
     public void setMainController(AppController mainController) {
         this.mainController = mainController;
+    }
+    private Consumer<Throwable> throwableConsumer;
+
+    public void setThrowableConsumer(Consumer<Throwable> throwableConsumer) {
+        this.throwableConsumer = throwableConsumer;
     }
 
     @FXML
@@ -105,18 +112,9 @@ public class HeaderController {
 
     @FXML
     public void showAllBranchesActiveListener(ActionEvent actionEvent) throws IOException {
-        String allBranches;
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        mainController.getEngineAdapter().showAllBranches();
 
-        alert.setTitle("Repository Branches");
-        alert.setHeaderText("Repository Branches");
-
-        allBranches = mainController.getEngineAdapter().showAllBranches();
-        alert.setContentText(allBranches);
-        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
-
-        alert.showAndWait();
     }
 
     @FXML
@@ -126,12 +124,6 @@ public class HeaderController {
 
         branchName = showTextInputDialog("New Branch","New Branch", "Enter new Branch Name");
         checkout = showConfirmationDialog("Checkout", "Checkout Branch","Checkout to new branch");
-
-        if(mainController.getEngineAdapter().checkChangesBeforeOperation()) {
-            discardChanges = showConfirmationDialog("Confirm discard changes", "You have changes" ,
-                    "You have open changes, if you continue this operation all uncomitted changes will be lost");
-
-        }
 
         mainController.createNewBranch(branchName, checkout);
     }
@@ -178,20 +170,28 @@ public class HeaderController {
     }
 
     @FXML
-    public void pushActionListener(ActionEvent actionEvent){
-
+    public void pushActionListener(ActionEvent actionEvent) throws IOException {
+        mainController.getEngineAdapter().getEngine().Push();
     }
 
     @FXML
-    public void showStatusActionListener(ActionEvent actionEvent){
-
+    public void showStatusActionListener(ActionEvent actionEvent) throws IOException {
+       mainController.ShowStatus();
     }
 
 
     @FXML
     public void mergeActionListener(ActionEvent actionEvent)throws FileNotFoundException,IOException,Exception{
         mainController.Merge();
+        mainController.ResetCommitTree();
     }
+
+    /*
+    @FXML
+    public void showStatusActionListener(ActionEvent actionEvent){
+        mainController.ShowStatus();
+    }
+     */
 
 
     public boolean showConfirmationDialog(String Title, String Header, String content){

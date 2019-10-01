@@ -1,9 +1,11 @@
 package components.center;
 
+import Engine.Engine;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.RBranch;
 import Engine.MagitObjects.RTBranch;
+import Engine.Status;
 import com.fxgraph.edges.Edge;
 import com.fxgraph.graph.ICell;
 import com.fxgraph.graph.Model;
@@ -47,6 +49,20 @@ public class CenterController {
     @FXML private TextFlow deletedFiles;
 
     private AppController mainController;
+    private Consumer<Throwable> throwableConsumer;
+    private Consumer<Commit> commitConsumer = commit -> {
+        authorText.textProperty().set(commit.getCreator());
+        dateText.textProperty().set(commit.getDateOfCreation());
+        commitSha1Text.textProperty().set(commit.getSha1());
+        parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
+        parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
+        commitMsg.textProperty().set(commit.getMessage());
+
+    };
+
+    public void setThrowableConsumer(Consumer<Throwable> throwableConsumer) {
+        this.throwableConsumer = throwableConsumer;
+    }
 
     public Text getAuthorText() {
         return authorText;
@@ -171,8 +187,14 @@ public class CenterController {
         if(!i_commit.getFirstPrecedingSha1().isEmpty()) {
             parent1Sha1Text.setText(i_commit.getFirstPrecedingSha1());
         }
+        else{
+            parent1Sha1Text.setText("");
+        }
         if(!i_commit.getSecondPrecedingSha1().isEmpty()){
             parent2Sha1Text.setText(i_commit.getSecondPrecedingSha1());
+        }
+        else{
+            parent2Sha1Text.setText("");
         }
 
         commitMsg.setText(i_commit.getMessage());
@@ -242,7 +264,7 @@ public class CenterController {
             repoName.textProperty().set(a);
             repoPath.textProperty().set(b);
         };
-        mainController.getEngineAdapter().SwitchRepo(path,biConsumer);
+        mainController.getEngineAdapter().SwitchRepo(path,biConsumer,commitConsumer);
     }
 
     public void createNewBranch(String branchName, boolean checkout) {
@@ -250,20 +272,38 @@ public class CenterController {
     }
 
     public void checkout(String branchName) throws InterruptedException {
-        mainController.getEngineAdapter().checkout(branchName);
+        mainController.getEngineAdapter().checkout(branchName,commitConsumer);
     }
 
     public void Commit(String message) throws InterruptedException {
-        Consumer<Commit> commitConsumer = commit -> {
-            authorText.textProperty().set(commit.getCreator());
-            dateText.textProperty().set(commit.getDateOfCreation());
-            commitSha1Text.textProperty().set(commit.getSha1());
-            parent1Sha1Text.textProperty().set(commit.getFirstPrecedingSha1());
-            parent2Sha1Text.textProperty().set(commit.getSecondPrecedingSha1());
-            commitMsg.textProperty().set(commit.getMessage());
+        Consumer<Status> statusConsumer = (status)-> {
+            changedFiles.getChildren().clear();
+            addedFiles.getChildren().clear();
+            deletedFiles.getChildren().clear();
+            for (String str : status.getModifiedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                changedFiles.getChildren().add(new Text("- " +str));
+                changedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
+            for (String str : status.getAddedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                addedFiles.getChildren().add(new Text("- " +str));
+                addedFiles.getChildren().add(new Text(System.lineSeparator()));
 
+            }
+            for (String str : status.getDeletedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                deletedFiles.getChildren().add(new Text("- " +str));
+                deletedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
         };
-        mainController.getEngineAdapter().Commit(message,commitConsumer);
+        mainController.getEngineAdapter().Commit(message,commitConsumer,statusConsumer);
     }
 
     public void Clone(){

@@ -6,6 +6,7 @@ import components.center.CenterController;
 import components.commons.ConflictComponentController;
 import components.header.HeaderController;
 import components.left.leftController;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -86,67 +87,64 @@ public class AppController {
     }
 
     public void Merge()throws FileNotFoundException,IOException,Exception{
-        if (engineAdapter.isOpenChanges()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Open Changes");
-            alert.setHeaderText("Cant merge");
-            alert.setContentText("You have uncommitted changes,please change them first");
+        try{
+            Map<Path,Conflict> conflicts;
+            String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
+            Button mergeButton = new Button("Merge");
+            final Stage dialog = new Stage();
+            Map<Path,Hyperlink> linksOnStage = new HashMap<>();
+            VBox conflictFiles= new VBox();
+            Consumer<Commit> commitConsumer = commit -> {
+                centerComponentController.getAuthorText().textProperty().set(commit.getCreator());
+                centerComponentController.getDateText().textProperty().set(commit.getDateOfCreation());
+                centerComponentController.getCommitSha1Text().textProperty().set(commit.getSha1());
+                centerComponentController.getParent1Sha1Text().textProperty().set(commit.getFirstPrecedingSha1());
+                centerComponentController.getParent2Sha1Text().textProperty().set(commit.getSecondPrecedingSha1());
+                centerComponentController.getCommitMsg().textProperty().set(commit.getMessage());
+            };
+            mergeButton.setId("mergeButton");
+            mergeButton.setDisable(true);
+            mergeButton.setOnAction((event) -> {
+                try{
+                    engineAdapter.Merge(branchName,commitConsumer,false);
+                    dialog.close();
+                }
+                //if there is nothing to commit(very rare)
+                catch (IOException e){
+                    dialog.close();
+                    System.out.println(e.getMessage());
+                }
+            });
+            conflicts = engineAdapter.Merge(branchName,commitConsumer,true);
+            Consumer<Conflict> conflictConsumer = conflict -> {
+                Hyperlink linkToRemove;
+                conflicts.remove(conflict.getFilePath());
+                linkToRemove = linksOnStage.get(conflict.getFilePath());
+                conflictFiles.getChildren().remove(linkToRemove);
+                if(conflicts.isEmpty()){
+                    mergeButton.setDisable(false);
+                }
+            };
 
-            alert.showAndWait();
-            return;
+            if(!conflicts.isEmpty()){
+                for (Map.Entry<Path,Conflict> entry : conflicts.entrySet()){
+                    Hyperlink currentLink = createHyperLink(entry.getValue(),conflictConsumer);
+                    conflictFiles.getChildren().add(currentLink);
+                    linksOnStage.put(entry.getKey(),currentLink);
+                }
+
+                dialog.initModality(Modality.APPLICATION_MODAL);
+                dialog.initOwner(primaryStage);
+                conflictFiles.getChildren().add(mergeButton);
+                Scene dialogScene = new Scene(conflictFiles, 300, 200);
+                dialog.setScene(dialogScene);
+                dialog.show();
+            }
         }
-        Map<Path,Conflict> conflicts;
-        String branchName =showTextInputDialog("Merge","Merge","choose branch to merge with: "+engineAdapter.getEngine().GetHeadBranch().getName());
-        Button mergeButton = new Button("Merge");
-        final Stage dialog = new Stage();
-        Map<Path,Hyperlink> linksOnStage = new HashMap<>();
-        VBox conflictFiles= new VBox();
-        Consumer<Commit> commitConsumer = commit -> {
-            centerComponentController.getAuthorText().textProperty().set(commit.getCreator());
-            centerComponentController.getDateText().textProperty().set(commit.getDateOfCreation());
-            centerComponentController.getCommitSha1Text().textProperty().set(commit.getSha1());
-            centerComponentController.getParent1Sha1Text().textProperty().set(commit.getFirstPrecedingSha1());
-            centerComponentController.getParent2Sha1Text().textProperty().set(commit.getSecondPrecedingSha1());
-            centerComponentController.getCommitMsg().textProperty().set(commit.getMessage());
-        };
-        mergeButton.setId("mergeButton");
-        mergeButton.setDisable(true);
-        mergeButton.setOnAction((event) -> {
-            try{
-                engineAdapter.Merge(branchName,commitConsumer,false);
-                dialog.close();
-            }
-            //if there is nothing to commit(very rare)
-            catch (IOException e){
-                dialog.close();
-                System.out.println(e.getMessage());
-            }
-        });
-        conflicts = engineAdapter.Merge(branchName,commitConsumer,true);
-        Consumer<Conflict> conflictConsumer = conflict -> {
-            Hyperlink linkToRemove;
-            conflicts.remove(conflict.getFilePath());
-            linkToRemove = linksOnStage.get(conflict.getFilePath());
-            conflictFiles.getChildren().remove(linkToRemove);
-            if(conflicts.isEmpty()){
-                mergeButton.setDisable(false);
-            }
-        };
-
-        if(!conflicts.isEmpty()){
-            for (Map.Entry<Path,Conflict> entry : conflicts.entrySet()){
-                Hyperlink currentLink = createHyperLink(entry.getValue(),conflictConsumer);
-                conflictFiles.getChildren().add(currentLink);
-                linksOnStage.put(entry.getKey(),currentLink);
-            }
-
-            dialog.initModality(Modality.APPLICATION_MODAL);
-            dialog.initOwner(primaryStage);
-            conflictFiles.getChildren().add(mergeButton);
-            Scene dialogScene = new Scene(conflictFiles, 300, 200);
-            dialog.setScene(dialogScene);
-            dialog.show();
+        catch (Exception e){
+            EngineAdapter.throwableConsumer.accept(e);
         }
+
     }
 
     public void ResetCommitTree() throws IOException {
@@ -219,5 +217,16 @@ public class AppController {
     public void Commit(String message) throws IOException, InterruptedException {
         centerComponentController.Commit(message);
         ResetCommitTree();
+    }
+
+    /*
+    public void ShowStatus() throws IOException {
+        Status status = engineAdapter.getEngine().showStatus();
+        leftComponentController.ShowStatus(status);
+    }
+    */
+
+    public void ShowStatus() {
+        leftComponentController.ShowStatus();
     }
 }

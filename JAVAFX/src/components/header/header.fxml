@@ -8,7 +8,7 @@
 
 <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="576.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.header.HeaderController">
     <children>
-        <MenuBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="608.0" VBox.vgrow="ALWAYS">
+        <MenuBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="22.0" prefWidth="606.0" VBox.vgrow="ALWAYS">
             <menus>
                 <Menu mnemonicParsing="false" text="Repository">
                     <items>
@@ -16,7 +16,6 @@
                         <MenuItem fx:id="loadFromXml" mnemonicParsing="false" onAction="#loadRepositoryFromXmlActionListener" text="Load From XML" />
                         <MenuItem fx:id="createNewRepo" mnemonicParsing="false" onAction="#createNewRepoActionListener" text="Create New Repository" />
                         <MenuItem fx:id="switchRepo" mnemonicParsing="false" onAction="#switchRepoActionListener" text="Switch Repository" />
-                        <MenuItem mnemonicParsing="false" text="Export To XML" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Branches">
@@ -30,7 +29,7 @@
                 </Menu>
             </menus>
         </MenuBar>
-        <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="37.0" prefWidth="605.0" VBox.vgrow="ALWAYS">
+        <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="34.0" prefWidth="606.0" VBox.vgrow="ALWAYS">
             <menus>
             <Menu mnemonicParsing="false">
                <graphic>
