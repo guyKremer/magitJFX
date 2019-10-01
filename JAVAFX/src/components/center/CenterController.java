@@ -1,6 +1,4 @@
 package components.center;
-
-import Engine.Engine;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.RBranch;
@@ -199,8 +197,35 @@ public class CenterController {
 
         commitMsg.setText(i_commit.getMessage());
 
-        //need to add status
+        Consumer<Status> statusConsumer = (status)-> {
+            changedFiles.getChildren().clear();
+            addedFiles.getChildren().clear();
+            deletedFiles.getChildren().clear();
+            for (String str : status.getModifiedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                changedFiles.getChildren().add(new Text("- " +str));
+                changedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
+            for (String str : status.getAddedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                addedFiles.getChildren().add(new Text("- " +str));
+                addedFiles.getChildren().add(new Text(System.lineSeparator()));
 
+            }
+            for (String str : status.getDeletedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                deletedFiles.getChildren().add(new Text("- " +str));
+                deletedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
+        };
+
+        mainController.getEngineAdapter().ShowStatus(i_commit, statusConsumer, i_commit.getFirstPrecedingSha1());
     }
 
     private String appendBranchNames(List<Branch> i_BranchesOfCommit)
@@ -304,9 +329,5 @@ public class CenterController {
             }
         };
         mainController.getEngineAdapter().Commit(message,commitConsumer,statusConsumer);
-    }
-
-    public void Clone(){
-
     }
 }
