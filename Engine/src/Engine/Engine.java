@@ -2,6 +2,7 @@ package Engine;
 
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
+import Engine.MagitObjects.FolderItems.Folder;
 import Engine.MagitObjects.Repository;
 
 import org.apache.commons.io.FileUtils;
@@ -66,6 +67,9 @@ public class Engine {
 
     public Status showStatus()throws java.io.IOException{
         isRepositoryInitialized();
+        if(!isFirstCommitExist()){
+            throw new FileNotFoundException("Cant show status because  nothing was committed");
+        }
         Map<String,List<String>> changesMap = m_currentRepository.checkChanges();
         Status res;
         res = new Status(m_currentRepository.m_repositoryPath.toString(),m_currentRepository.GetName(), m_user,
@@ -138,6 +142,25 @@ public class Engine {
             throw new FileNotFoundException(theirsBranchName+ " isn't a branch");
         }
         m_currentRepository.forwardMerge(theirsBranchName);
+    }
+
+    public Status showStatusAgainstOtherCommits(Commit commit, String prevCommitSha1)throws IOException {
+        isRepositoryInitialized();
+        Commit originalCommit = m_currentRepository.GeCurrentCommit();
+        Folder originalWc = m_currentRepository.loadWC();
+        Status status=new Status(m_currentRepository.m_repositoryPath.toString(),m_currentRepository.GetName(),m_user,null,null,null,null);
+
+        if(prevCommitSha1!=null && !prevCommitSha1.isEmpty()){
+            m_currentRepository.clearWc();
+            Commit prevCommit = new Commit(prevCommitSha1);
+            m_currentRepository.setCurrentCommit(prevCommit);
+            originalCommit.flush();
+            status = showStatus();
+        }
+        m_currentRepository.setCurrentCommit(originalCommit);
+        m_currentRepository.clearWc();
+        originalWc.flushToWc();
+        return status;
     }
 
     public static class Utils{

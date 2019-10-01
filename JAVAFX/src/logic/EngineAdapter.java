@@ -31,10 +31,10 @@ public class EngineAdapter {
     private Task<Boolean> currentRunningTask;
     public static Consumer<Throwable> throwableConsumer = createThrowableConsumer();
 
+
     private static Consumer<Throwable> createThrowableConsumer () {
         return (throwable) -> {
             Platform.runLater(() -> {
-                System.out.println("sdfs");
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
                 alert.setContentText(throwable.getMessage());
@@ -162,8 +162,14 @@ public class EngineAdapter {
     }
 
 
-    public void Commit(String message, Consumer<Commit> commitConsumer) {
-        currentRunningTask = new CommitTask(engine,message,commitConsumer);
+    public void Commit(String message, Consumer<Commit> commitConsumer,Consumer<Status> statusConsumer) {
+        currentRunningTask = new CommitTask(engine,message,commitConsumer,statusConsumer);
+        currentRunningTask.run();
+//        new Thread(currentRunningTask).start();
+    }
+
+    public void ShowStatus(Commit commit,Consumer<Status> statusConsumer,String prevCommitSha1){
+        currentRunningTask = new ShowStatusTask(engine,statusConsumer,commit,prevCommitSha1);
         new Thread(currentRunningTask).start();
     }
 }

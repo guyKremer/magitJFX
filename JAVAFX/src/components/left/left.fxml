@@ -7,10 +7,10 @@
 <VBox id="left" fx:id="left" minHeight="-Infinity" minWidth="-Infinity" prefHeight="345.0" prefWidth="114.0" stylesheets="@left.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="components.left.leftController">
     <children>
         <Label text="Changed Files" VBox.vgrow="ALWAYS" />
-        <TextFlow prefHeight="107.0" prefWidth="202.0" VBox.vgrow="ALWAYS" />
+        <TextFlow fx:id="changedFiles" prefHeight="0.0" prefWidth="104.0" VBox.vgrow="ALWAYS" />
         <Label text="Added Files" VBox.vgrow="ALWAYS" />
-        <TextFlow layoutX="10.0" layoutY="27.0" prefHeight="107.0" prefWidth="157.0" VBox.vgrow="ALWAYS" />
+        <TextFlow fx:id="addedFiles" layoutX="10.0" layoutY="27.0" prefHeight="1.0" prefWidth="104.0" VBox.vgrow="ALWAYS" />
         <Label layoutX="10.0" layoutY="134.0" text="Deleted Files" VBox.vgrow="ALWAYS" />
-        <TextFlow layoutX="10.0" layoutY="151.0" prefHeight="0.0" prefWidth="97.0" VBox.vgrow="ALWAYS" />
+        <TextFlow fx:id="deletedFiles" layoutX="10.0" layoutY="151.0" prefHeight="0.0" prefWidth="104.0" VBox.vgrow="ALWAYS" />
     </children>
 </VBox>

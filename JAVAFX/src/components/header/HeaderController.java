@@ -143,6 +143,11 @@ public class HeaderController {
         mainController.Merge();
     }
 
+    @FXML
+    public void showStatusActionListener(ActionEvent actionEvent){
+        mainController.ShowStatus();
+    }
+
 
     public boolean showConfirmationDialog(String Title, String Header, String content){
         boolean res = false;

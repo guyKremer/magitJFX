@@ -32,7 +32,10 @@
         </MenuBar>
         <MenuBar cache="true" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="608.0" VBox.vgrow="ALWAYS">
             <menus>
-                <Menu mnemonicParsing="false" text="Show Status" />
+                <Menu mnemonicParsing="false">
+               <graphic>
+                  <Button fx:id="showStatus" mnemonicParsing="false" onAction="#showStatusActionListener" prefHeight="31.0" prefWidth="90.0" text="Show Status" />
+               </graphic></Menu>
                 <Menu mnemonicParsing="false">
                <graphic>
                   <Button fx:id="commit" mnemonicParsing="false" onAction="#commitActionListener" prefHeight="31.0" prefWidth="63.0" text="Commit" />

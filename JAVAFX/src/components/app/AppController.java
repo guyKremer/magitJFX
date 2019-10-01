@@ -212,4 +212,8 @@ public class AppController {
     public void Commit(String message){
         centerComponentController.Commit(message);
     }
+
+    public void ShowStatus() {
+        leftComponentController.ShowStatus();
+    }
 }

@@ -185,6 +185,10 @@ public class Repository {
         return res;
     }
 
+    public void setCurrentCommit(Commit currentCommit) {
+        this.m_currentCommit = currentCommit;
+    }
+
     public void createCommit(String i_message)throws FileAlreadyExistsException,java.io.IOException {
 
         Map<String,List<String>> changesMap = checkChanges();
@@ -418,7 +422,6 @@ public class Repository {
         }
         else{
             SetHeadBranch(m_branches.get(i_newHeadBranch));
-            System.out.println(m_headBranch.getName());
             loadCommitFromBranch(m_headBranch);
             flushCommit();
         }

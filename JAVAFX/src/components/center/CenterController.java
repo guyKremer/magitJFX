@@ -1,9 +1,11 @@
 package components.center;
 
+import Engine.Engine;
 import Engine.MagitObjects.Branch;
 import Engine.MagitObjects.Commit;
 import Engine.MagitObjects.RBranch;
 import Engine.MagitObjects.RTBranch;
+import Engine.Status;
 import com.fxgraph.edges.Edge;
 import com.fxgraph.graph.ICell;
 import com.fxgraph.graph.Model;
@@ -265,6 +267,34 @@ public class CenterController {
     }
 
     public void Commit(String message) {
-        mainController.getEngineAdapter().Commit(message,commitConsumer);
+        Consumer<Status> statusConsumer = (status)-> {
+            changedFiles.getChildren().clear();
+            addedFiles.getChildren().clear();
+            deletedFiles.getChildren().clear();
+            for (String str : status.getModifiedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                changedFiles.getChildren().add(new Text("- " +str));
+                changedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
+            for (String str : status.getAddedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                addedFiles.getChildren().add(new Text("- " +str));
+                addedFiles.getChildren().add(new Text(System.lineSeparator()));
+
+            }
+            for (String str : status.getDeletedFiles()) {
+                if(str.equals(mainController.getEngineAdapter().getEngine().GetCurrentRepository().GetRepositoryPath().toString())){
+                    continue;
+                }
+                deletedFiles.getChildren().add(new Text("- " +str));
+                deletedFiles.getChildren().add(new Text(System.lineSeparator()));
+            }
+        };
+        mainController.getEngineAdapter().Commit(message,commitConsumer,statusConsumer);
     }
+
 }
