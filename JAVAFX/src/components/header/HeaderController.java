@@ -1,5 +1,6 @@
 package components.header;
 
+import Engine.Status;
 import components.CommonResourcesPaths;
 import components.app.AppController;
 import components.center.CenterController;
@@ -183,8 +184,8 @@ public class HeaderController {
     }
 
     @FXML
-    public void showStatusActionListener(ActionEvent actionEvent){
-
+    public void showStatusActionListener(ActionEvent actionEvent) throws IOException {
+       mainController.ShowStatus();
     }
 
 

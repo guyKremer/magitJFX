@@ -220,4 +220,9 @@ public class AppController {
         centerComponentController.Commit(message);
         ResetCommitTree();
     }
+
+    public void ShowStatus() throws IOException {
+        Status status = engineAdapter.getEngine().showStatus();
+        leftComponentController.ShowStatus(status);
+    }
 }
