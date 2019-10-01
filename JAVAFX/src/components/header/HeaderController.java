@@ -186,10 +186,12 @@ public class HeaderController {
         mainController.ResetCommitTree();
     }
 
+    /*
     @FXML
     public void showStatusActionListener(ActionEvent actionEvent){
         mainController.ShowStatus();
     }
+     */
 
 
     public boolean showConfirmationDialog(String Title, String Header, String content){

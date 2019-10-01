@@ -271,11 +271,11 @@ public class CenterController {
         mainController.getEngineAdapter().createNewBranch(branchName, checkout);
     }
 
-    public void checkout(String branchName) {
+    public void checkout(String branchName) throws InterruptedException {
         mainController.getEngineAdapter().checkout(branchName,commitConsumer);
     }
 
-    public void Commit(String message) {
+    public void Commit(String message) throws InterruptedException {
         Consumer<Status> statusConsumer = (status)-> {
             changedFiles.getChildren().clear();
             addedFiles.getChildren().clear();

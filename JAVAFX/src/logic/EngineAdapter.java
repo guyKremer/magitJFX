@@ -127,14 +127,6 @@ public class EngineAdapter {
         new Thread(currentRunningTask).start();
     }
 
-
-    public void checkout(String branchName) throws InterruptedException {
-        currentRunningTask = new CheckoutTask(engine, branchName);
-        Thread t = new Thread(currentRunningTask);//.start();
-        t.start();
-        t.join();
-    }
-
     public boolean checkChangesBeforeOperation() throws IOException {
         Boolean res = false;
         Status status = engine.showStatus();
@@ -145,7 +137,7 @@ public class EngineAdapter {
 
         return res;
     }
-    public void checkout(String branchName,Consumer<Commit>commitConsumer) {
+    public void checkout(String branchName,Consumer<Commit>commitConsumer) throws InterruptedException {
         currentRunningTask = new CheckoutTask(engine, branchName,commitConsumer);
         Thread t = new Thread(currentRunningTask);//.start();
         t.start();
@@ -180,7 +172,7 @@ public class EngineAdapter {
     }
 
 
-    public void Commit(String message, Consumer<Commit> commitConsumer,Consumer<Status> statusConsumer) {
+    public void Commit(String message, Consumer<Commit> commitConsumer,Consumer<Status> statusConsumer) throws InterruptedException {
         currentRunningTask = new CommitTask(engine,message,commitConsumer,statusConsumer);
         Thread t = new Thread(currentRunningTask);
         t.start();
