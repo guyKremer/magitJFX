@@ -191,4 +191,14 @@ public class EngineAdapter {
         currentRunningTask = new ShowStatusTask(engine,statusConsumer,commit,prevCommitSha1);
         new Thread(currentRunningTask).start();
     }
+
+    public void ResetBranch(String sha1,Consumer<Commit> commitConsumer) {
+        try {
+            engine.resetBranchSha1(sha1);
+            commitConsumer.accept(engine.GetCurrentRepository().GeCurrentCommit());
+        }
+        catch (Exception e){
+            throwableConsumer.accept(e);
+        }
+    }
 }

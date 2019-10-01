@@ -229,4 +229,9 @@ public class AppController {
     public void ShowStatus() {
         leftComponentController.ShowStatus();
     }
+
+    public void resetBranch() {
+        String sha1 =  showTextInputDialog("Reset Branch","Reset Branch","Enter Sha1");
+        centerComponentController.resetBranch(sha1);
+    }
 }

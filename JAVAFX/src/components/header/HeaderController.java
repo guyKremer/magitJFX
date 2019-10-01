@@ -185,6 +185,10 @@ public class HeaderController {
         mainController.Merge();
         mainController.ResetCommitTree();
     }
+    @FXML
+    public void resetBranchActionListener(ActionEvent actionEvent){
+        mainController.resetBranch();
+    }
 
     /*
     @FXML

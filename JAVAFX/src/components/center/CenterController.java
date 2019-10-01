@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javafx.scene.text.TextFlow;
+import logic.EngineAdapter;
 
 public class CenterController {
 
@@ -329,5 +330,9 @@ public class CenterController {
             }
         };
         mainController.getEngineAdapter().Commit(message,commitConsumer,statusConsumer);
+    }
+
+    public void resetBranch(String sha1) {
+        mainController.getEngineAdapter().ResetBranch(sha1,commitConsumer);
     }
 }
