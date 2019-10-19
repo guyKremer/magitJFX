@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="magitJFX">
+    <output-path>$PROJECT_DIR$/out/artifacts/magitJFX</output-path>
+    <root id="root">
+      <element id="archive" name="magitJFX.jar">
+        <element id="module-output" name="magitJFX" />
+      </element>
+    </root>
+  </artifact>
+</component>
