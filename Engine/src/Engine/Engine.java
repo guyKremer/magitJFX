@@ -502,6 +502,7 @@ public class Engine {
         initNewPaths(RRpath, m_currentRepository);
 
         branchCommit1 = new Commit(m_currentRepository.GetHeadBranch().getCommitSha1());
+        String headCommit = branchCommit1.getSha1();
 
 
         //Repository.m_pathToMagitDirectory = currMagitPath;
@@ -554,7 +555,7 @@ public class Engine {
             RR.GetBranches().remove(branch.getName());
 
             newBranch = new Branch(Repository.m_pathToMagitDirectory.resolve("branches").
-                        resolve(branch.getName()), branch.getCommitSha1());
+                        resolve(branch.getName()), headCommit);
 
             RR.InsertBranch(newBranch);
             if(flag) {
