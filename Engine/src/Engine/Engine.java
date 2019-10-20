@@ -543,7 +543,7 @@ public class Engine {
             //VALIDATION CHECK
 
             branch = RR.GetBranches().get(m_currentRepository.GetHeadBranch().getName());
-            if(RR.GetHeadBranch().getName() == m_currentRepository.GetHeadBranch().getName()) {
+            if(RR.GetHeadBranch().getName().equals(m_currentRepository.GetHeadBranch().getName())) {
                 flag = true;
             }
             RR.GetBranches().remove(branch.getName());
