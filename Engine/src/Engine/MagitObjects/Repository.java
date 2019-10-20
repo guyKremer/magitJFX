@@ -15,6 +15,7 @@ import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Repository {
     protected String m_name;
@@ -392,7 +393,7 @@ public class Repository {
                         for(Path entry1 : stream1){
                             lines = Files.readAllLines(entry1.toAbsolutePath());
                             RBranch rb = new RBranch(entry1,
-                                    entry.getFileName().toString() + "/" + entry1.getFileName().toString(),
+                                    entry.getFileName().toString() + File.separator + entry1.getFileName().toString(),
                                     lines.get(0));
                             m_branches.put(rb.getName(), rb);
                         }
@@ -438,12 +439,28 @@ public class Repository {
     }
 
     public void checkOut(String i_newHeadBranch)throws FileNotFoundException,IOException {
+        RTBranch rtBranch;
+        String[] parts;
+        String pattern = Pattern.quote(System.getProperty("file.separator"));
         if(!m_branches.containsKey(i_newHeadBranch)){
             throw new FileNotFoundException(i_newHeadBranch + " is not a branch");
         }
         else{
-            SetHeadBranch(m_branches.get(i_newHeadBranch));
-            //System.out.println(m_headBranch.getName());
+            //check if is RBranch
+            // -------------------------------------------
+            if(i_newHeadBranch.contains(File.separator)){
+                parts = i_newHeadBranch.split(pattern);
+                rtBranch = new RTBranch(m_pathToMagitDirectory.resolve("branches").
+                        resolve(parts[1]), m_branches.get(i_newHeadBranch).getCommitSha1());
+
+                InsertBranch(rtBranch);
+                SetHeadBranch(rtBranch);
+            }
+            else {
+                SetHeadBranch(m_branches.get(i_newHeadBranch));
+                //System.out.println(m_headBranch.getName());
+            }
+            // ------------------------------------------
             loadCommitFromBranch(m_headBranch);
             flushCommit();
         }

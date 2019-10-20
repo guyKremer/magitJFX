@@ -313,7 +313,7 @@ public class Engine {
         for (Branch branch : m_currentRepository.GetBranches().values()) {
             rb = new RBranch(LR.GetRepositoryPath().resolve(".magit").resolve("branches").resolve(m_currentRepository.GetName())
                     .resolve(branch.getName()),
-                    m_currentRepository.GetName() +"/" + branch.getName(),
+                    m_currentRepository.GetName() + File.separator + branch.getName(),
                     branch.getCommitSha1());
             LR.InsertBranch(rb);
         }
@@ -367,12 +367,12 @@ public class Engine {
         //build new branches to the LR
 
         for(Map.Entry<String,Branch> branch: RR.GetBranches().entrySet()){
-            if(m_currentRepository.GetBranches().containsKey(RR.GetName() + "/" + branch.getKey())){
+            if(m_currentRepository.GetBranches().containsKey(RR.GetName() + File.separator + branch.getKey())){
                 newBranches.put(
-                        RR.GetName() + "/" + branch.getKey(),
+                        RR.GetName() + File.separator + branch.getKey(),
                         new RBranch(Repository.m_pathToMagitDirectory.resolve("branches").resolve(RR.GetName())
                                 .resolve(branch.getKey()),
-                                RR.GetName() +"/" + branch.getKey(),
+                                RR.GetName() + File.separator + branch.getKey(),
                                 branch.getValue().getCommitSha1()));
             }
         }
@@ -445,10 +445,10 @@ public class Engine {
 
             // update RB in LR
             branch = RR.GetBranches().get(m_currentRepository.GetHeadBranch().getName());
-            m_currentRepository.GetBranches().remove(RR.GetName() + "/" + branch.getName());
+            m_currentRepository.GetBranches().remove(RR.GetName() + File.separator + branch.getName());
 
             newRBranch = new RBranch(Repository.m_pathToMagitDirectory.resolve("branches").resolve(RR.GetName()).resolve(branch.getName()),
-                    RR.GetName() + "/" + branch.getName(), branch.getCommitSha1());
+                    RR.GetName() + File.separator + branch.getName(), branch.getCommitSha1());
 
             m_currentRepository.InsertBranch(newRBranch);
 
